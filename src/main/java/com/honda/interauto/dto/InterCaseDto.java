@@ -3,7 +3,7 @@ package com.honda.interauto.dto;
 import org.springframework.stereotype.Component;
 
 @Component
-public class InterDto {
+public class InterCaseDto {
     private Integer caseId;
     private String DNS;
     private String interUrl;

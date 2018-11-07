@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.honda.interauto.dao.InterCaseDao">
+    <sql id="interCaseInfo">
+      caseId,DNS,interUrl,requestMethod,needDesignReq,requestJson,reqParam,needInit,InitCode,needDesignRes,
+      expectRes,resParam,needRoll,rollCode,usedParam
+	</sql>
+    <insert id="newInterCase" parameterType="com.honda.interauto.dto.InterCaseDto" keyProperty="id" useGeneratedKeys="true">
+      insert into t_interCase <include refid="interCaseInfo"/> values(#{caseId},#{DNS},#{interUrl},#{requestMethod},#{needDesignReq},
+        #{requestJson},#{reqParam},#{needInit},#{initCode},#{needDesignRes},#{expectRes},#{resParam},#{needRoll},#{rollCode},#{usedParam})
+    </insert>
+</mapper>
