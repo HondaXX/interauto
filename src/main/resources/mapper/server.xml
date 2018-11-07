@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.honda.interauto.dao.ServerDao">
+    <sql id="serverInfo">
+		id, serverId
+	</sql>
+    <select id="getAllServers" resultType="com.honda.interauto.dto.ServerDto">
+        select <include refid="serverInfo"/> from t_server where status=0
+    </select>
+</mapper>
