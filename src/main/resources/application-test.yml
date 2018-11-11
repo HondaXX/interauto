@@ -11,10 +11,10 @@ logging:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.31.227:3306/interauto?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
+    url: jdbc:mysql://192.168.31.228:3306/interauto?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
     username: auto
     password: 688451a
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.com.honda.interauto.dao
+  type-aliases-package: com.honda.interauto.dao

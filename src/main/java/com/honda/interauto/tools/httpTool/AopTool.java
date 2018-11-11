@@ -27,6 +27,7 @@ public class AopTool {
 
     @Around("execution(* com.honda.interauto.controllers.*.*(..))")
     public Object checkInter(ProceedingJoinPoint joinpoint){
+
         List<String> serverIdList = new ArrayList<String>();
         List<ServerDto> serverDtoList = serverService.getAllServers();
         for(int i = 0; i < serverDtoList.size(); i++){

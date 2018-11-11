@@ -11,6 +11,6 @@ public class InterCaseService {
     private InterCaseDao interCaseDao;
 
     public Integer newInterCase(InterCaseDto interCaseDto){
-        return interCaseDao.newInterCase();
+        return interCaseDao.newInterCase(interCaseDto);
     }
 }

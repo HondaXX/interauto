@@ -73,6 +73,7 @@
         <logger name="org.springframework" level="INFO"/>
         <logger name="org.mybatis" level="INFO"/>
         <logger name="com.zaxxer" level="OFF"/>
+        <logger name="org.apache.commons.beanutils" level="OFF"/>
 
         <root level="DEBUG">
             <appender-ref ref="Console"/>

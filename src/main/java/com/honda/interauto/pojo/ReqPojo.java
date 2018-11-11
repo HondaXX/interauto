@@ -13,6 +13,7 @@ public class ReqPojo{
     public void setServerId(String serverId) {
         this.serverId = serverId;
     }
+
     public Map<String, Object> getRequestBody() {
         return requestBody;
     }
