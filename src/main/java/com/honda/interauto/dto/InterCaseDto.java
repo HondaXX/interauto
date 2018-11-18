@@ -2,10 +2,13 @@ package com.honda.interauto.dto;
 
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
 public class InterCaseDto {
     private Integer caseId;
     private String DNS;
+    private String caseAim;
     private String interUrl;
     private String requestMethod;//0post,1get
     private String needDesignReq;
@@ -19,6 +22,9 @@ public class InterCaseDto {
     private String needRoll;//0no,1sql,2redis
     private String rollCode;
     private String usedParam;
+    private String caseStatus;
+    private String createTime;
+    private String updataTime;
 
     public Integer getCaseId() {
         return caseId;
@@ -34,6 +40,14 @@ public class InterCaseDto {
 
     public void setDNS(String DNS) {
         this.DNS = DNS;
+    }
+
+    public String getCaseAim() {
+        return caseAim;
+    }
+
+    public void setCaseAim(String caseAim) {
+        this.caseAim = caseAim;
     }
 
     public String getInterUrl() {
@@ -138,5 +152,29 @@ public class InterCaseDto {
 
     public void setUsedParam(String usedParam) {
         this.usedParam = usedParam;
+    }
+
+    public String getCaseStatus() {
+        return caseStatus;
+    }
+
+    public void setCaseStatus(String caseStatus) {
+        this.caseStatus = caseStatus;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getUpdataTime() {
+        return updataTime;
+    }
+
+    public void setUpdataTime(String updataTime) {
+        this.updataTime = updataTime;
     }
 }

@@ -9,11 +9,16 @@ public interface BaseError {
     String SYS_ERROR = "100";
     String SYS_ERROR_DESC = "system error";
     String NULL_ERROR = "101";
-    String NULL_ERROR_DESC = "param null";
+    String NULL_ERROR_DESC = "serverId is null";
     String FOMAT_ERROR = "102";
     String FOMAT_ERROR_DESC = "Format error";
     String SERVERID_NOT_FOUND = "103";
     String SERVERID_NOT_FOUND_DESC = "serverId not found";
+    String PARAM_ERROR = "104";
+    String PARAM_ERROR_DESC = "param not found or null";
+    String DB_ERROR = "105";
+    String DB_ERROR_DESC = "db error";
+
 
     //空值
     String NULL_VALUE = "null";

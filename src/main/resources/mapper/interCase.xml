@@ -5,11 +5,56 @@
 
 <mapper namespace="com.honda.interauto.dao.InterCaseDao">
     <sql id="interCaseInfo">
-      caseId,DNS,interUrl,requestMethod,needDesignReq,requestJson,reqParam,needInit,InitCode,needDesignRes,
-      expectRes,resParam,needRoll,rollCode,usedParam
+      caseId,DNS,caseAim,interUrl,requestMethod,needDesignReq,requestJson,reqParam,needInit,initCode,needDesignRes,
+      expectRes,resParam,needRoll,rollCode,usedParam,createTime,updataTime
 	</sql>
+
     <insert id="newInterCase" parameterType="com.honda.interauto.dto.InterCaseDto" keyProperty="id" useGeneratedKeys="true">
-      insert into t_interCase (<include refid="interCaseInfo"/>) values(#{caseId},#{DNS},#{interUrl},#{requestMethod},#{needDesignReq},
-        #{requestJson},#{reqParam},#{needInit},#{initCode},#{needDesignRes},#{expectRes},#{resParam},#{needRoll},#{rollCode},#{usedParam})
+      insert into t_interCase (<include refid="interCaseInfo"/>) values(#{caseId},#{DNS},#{caseAim},#{interUrl},#{requestMethod},#{needDesignReq},
+        #{requestJson},#{reqParam},#{needInit},#{initCode},#{needDesignRes},#{expectRes},#{resParam},#{needRoll},#{rollCode},#{usedParam},
+        (#{createTime}, '%Y-%m-%d %H:%i:%S'), #{updataTime}, '%Y-%m-%d %H:%i:%S')
     </insert>
+
+    <update id="updataInterCase" parameterType="com.honda.interauto.dto.InterCaseDto">
+        update t_interCase
+        <set>
+            <if test="DNS != null">DNS = #{DNS},</if>
+            <if test="caseAim != null">caseAim = #{caseAim}</if>
+            <if test="interUrl != null">interUrl = #{interUrl},</if>
+            <if test="requestMethod != null">requestMethod = #{requestMethod},</if>
+            <if test="needDesignReq != null">needDesignReq = #{needDesignReq},</if>
+            <if test="requestJson != null">requestJson = #{requestJson},</if>
+            <if test="reqParam != null">reqParam = #{reqParam},</if>
+            <if test="needInit != null">needInit = #{needInit},</if>
+            <if test="initCode != null">initCode = #{initCode},</if>
+            <if test="needDesignRes != null">needDesignRes = #{needDesignRes},</if>
+            <if test="expectRes != null">expectRes = #{expectRes},</if>
+            <if test="resParam != null">resParam = #{resParam},</if>
+            <if test="needRoll != null">needRoll = #{needRoll},</if>
+            <if test="rollCode != null">rollCode = #{rollCode},</if>
+            <if test="usedParam != null">usedParam = #{usedParam},</if>
+            <if test="updataTime != null">updataTime = DATE_FORMAT(#{updataTime}, '%Y-%m-%d %H:%i:%S')</if>
+            <!--oracle用to_date(#{updataTime}, 'YYYY-MM-DD HH24:MI:SS')-->
+        </set>
+        where caseId = #{caseId}
+    </update>
+
+    <update id="deleteInterCase" parameterType="int">
+        update t_interCase
+        <set>
+            <if test="caseId != null">caseStatus = 0</if>
+        </set>
+        where caseId = #{caseId}
+    </update>
+
+    <select id="getAllInterCases" resultType="com.honda.interauto.dto.InterCaseDto">
+        select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1' order by t.caseId asc
+    </select>
+
+    <select id="getInterCaseByCaseAim" resultType="com.honda.interauto.dto.InterCaseDto">
+        select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1'
+        and <if test="caseAim != null">caseAim like CONCAT('%', #{caseAim, jdbcType=CHAR}, '%')</if>
+        order by t.caseId asc
+    </select>
+
 </mapper>

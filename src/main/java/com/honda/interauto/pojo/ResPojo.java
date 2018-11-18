@@ -1,7 +1,11 @@
 package com.honda.interauto.pojo;
 
+import org.springframework.stereotype.Service;
+
 import java.util.HashMap;
 
+
+@Service
 public class ResPojo extends HashMap<String, Object>{
     private static final long serialVersionUID = 870714850748751852L;
 

@@ -5,6 +5,8 @@ import com.honda.interauto.dto.InterCaseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class InterCaseService {
     @Autowired
@@ -12,5 +14,21 @@ public class InterCaseService {
 
     public Integer newInterCase(InterCaseDto interCaseDto){
         return interCaseDao.newInterCase(interCaseDto);
+    }
+
+    public Integer updataInterCase(InterCaseDto interCaseDto){
+        return interCaseDao.updataInterCase(interCaseDto);
+    }
+
+    public Integer deleteInterCase(Integer caseId){
+        return interCaseDao.deleteInterCase(caseId);
+    }
+
+    public List<InterCaseDto> getAllInterCases(){
+        return interCaseDao.getAllInterCases();
+    }
+
+    public List<InterCaseDto> getInterCaseByCaseAim(String caseAim){
+        return interCaseDao.getInterCaseByCaseAim(caseAim);
     }
 }
