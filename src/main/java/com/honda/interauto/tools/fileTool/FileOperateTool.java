@@ -1,5 +1,8 @@
 package com.honda.interauto.tools.fileTool;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,6 +12,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class FileZipTool {
+    private static Logger logger = LogManager.getLogger(FileZipTool.class);
+
     public static void fileToZip(List<String> filePathList, String zipFilePath){
         ZipOutputStream zos = null;
         try{
@@ -29,13 +34,13 @@ public class FileZipTool {
                     zos.closeEntry();
                     fis.close();
                 } catch (Exception e) {
-                    System.out.println("get file error");
+                    logger.error("get file error with path: " + filePath);
                     e.printStackTrace();
                 }
             }
             zos.close();
         }catch (Exception e){
-            System.out.println("open zip file error");
+            logger.error("open zip file error with path: " + zipFilePath);
             e.printStackTrace();
         }
     }
