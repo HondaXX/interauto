@@ -5,8 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConfigurationProperties(prefix = "selfproperties")
-public class SelfProperties {
+@ConfigurationProperties(prefix = "baseconfigs")
+public class BaseConfigs {
     private String zipFilePath;
 
     public String getZipFilePath() {

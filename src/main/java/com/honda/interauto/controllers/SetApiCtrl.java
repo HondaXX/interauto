@@ -1,6 +1,7 @@
 package com.honda.interauto.controllers;
 
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.honda.interauto.dto.InterCaseDto;
 import com.honda.interauto.pojo.BaseError;
 import com.honda.interauto.pojo.ReqPojo;
@@ -108,8 +109,8 @@ public class SetApiCtrl {
             res.putData("interList", interCaseList);
             return res;
         }else {
-            res.setResCode(BaseError.DB_ERROR);
-            res.putData("res", BaseError.DB_ERROR_DESC);
+            res.setErrorCode(BaseError.DB_ERROR);
+            res.setErrorDesc(BaseError.DB_ERROR_DESC);
             return res;
         }
     }
@@ -123,8 +124,8 @@ public class SetApiCtrl {
             res.putData("interList", interCaseList);
             return res;
         }else {
-            res.setResCode(BaseError.DB_ERROR);
-            res.putData("res", BaseError.DB_ERROR_DESC);
+            res.setErrorCode(BaseError.DB_ERROR);
+            res.setErrorDesc(BaseError.DB_ERROR_DESC);
             return res;
         }
     }

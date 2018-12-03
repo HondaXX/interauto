@@ -6,13 +6,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class FileZipTool {
-    private static Logger logger = LogManager.getLogger(FileZipTool.class);
+public class FileOperateTool {
+    private static Logger logger = LogManager.getLogger(FileOperateTool.class);
 
     public static void fileToZip(List<String> filePathList, String zipFilePath){
         ZipOutputStream zos = null;
