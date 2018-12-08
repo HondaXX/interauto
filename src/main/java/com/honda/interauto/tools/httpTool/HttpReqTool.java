@@ -3,6 +3,7 @@ package com.honda.interauto.tools.httpTool;
 import com.honda.interauto.dto.InterCaseDto;
 import com.honda.interauto.tools.sysTool.TypeChangeTool;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
@@ -12,7 +13,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -22,6 +26,8 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.nio.charset.Charset;
 import java.util.*;
 
 public class HttpReqTool {
@@ -45,7 +51,7 @@ public class HttpReqTool {
             logger.error("run case error id: " + interCaseDto.getCaseId());
             e.printStackTrace();
         }
-        //自定义cookies值
+        //根据实际情况自定义cookies值
         String JSESSIONID = null;
         String cookie_qluin = null;
         String cookie_qlskey = null;
@@ -106,15 +112,65 @@ public class HttpReqTool {
                 CloseableHttpResponse response = client.execute(hp);
                 return returnHttpRes(response, reqMap);
             }catch (Exception e){
-                logger.info("request error");
+                logger.info("request error" + interCaseDto.getCaseId());
                 e.printStackTrace();
                 return null;
             }
         }else {
-            logger.info("unknow request method");
+            logger.info("unknow request method" + interCaseDto.getCaseId());
             return null;
         }
     }
+
+    //文件请求
+    public static String httpReqFile(File file, InterCaseDto interCaseDto){
+        logger.info("========>start case with id: " + interCaseDto.getCaseId());
+        String reqUrl = interCaseDto.getDNS() + interCaseDto.getInterUrl();
+
+        CloseableHttpClient client = HttpClients.createDefault();
+
+        try{
+            HttpPost hp = new HttpPost(reqUrl);
+            logger.info("upload file url: " + reqUrl + "\n" + "upload file response: ");
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+            builder.addBinaryBody("file", file, ContentType.create("multipart/form-data"), file.getName());
+            HttpEntity entity = builder.build();
+            hp.setEntity(entity);
+            CloseableHttpResponse response = client.execute(hp);
+            return returnHttpRes(response, null);
+        }catch (Exception e){
+            logger.info("upload file error caseid: {}" + interCaseDto.getCaseId());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    //表单请求
+    public static String httpReqForm(InterCaseDto interCaseDto){
+        logger.info("========>start case with id: " + interCaseDto.getCaseId());
+        Map<String, Object> reqMap = TypeChangeTool.strToMap(interCaseDto.getRequestJson());
+        String reqUrl = interCaseDto.getDNS() + interCaseDto.getInterUrl();
+
+        CloseableHttpClient client = HttpClients.createDefault();
+        try{
+            HttpPost hp = new HttpPost(reqUrl);
+            logger.info("call request url: " + reqUrl + "\n" + "call request param: " + reqMap.toString() + "\n" + "call request response: ");
+            List<BasicNameValuePair> form = new ArrayList<BasicNameValuePair>();
+            for (String name : reqMap.keySet()) {
+                form.add(new BasicNameValuePair(name, reqMap.get(name).toString()));
+            }
+            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Charset.forName("UTF-8"));
+            hp.setEntity(entity);
+            CloseableHttpResponse response = client.execute(hp);
+            return returnHttpRes(response, reqMap);
+        }catch (Exception e){
+            logger.info("request error caseid {}" + interCaseDto.getCaseId());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     public static List<NameValuePair> getReqParamList(Map<String, Object> reqMap){
         List<NameValuePair> list = new ArrayList<NameValuePair>();

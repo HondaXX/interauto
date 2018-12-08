@@ -46,33 +46,37 @@ public class UpDownLoadTool {
     public static void downLoadFile(String filePath, HttpServletResponse response){
         File file = new File(filePath);
 
-        InputStream is = null;
+        response.reset();
         response.addHeader("pragma", "NO-cache");
-        response.addHeader("Cache-Control","no-cache");
-        response.addDateHeader("Expries",0);
-        response.setContentType("application/vnd.ms-excel;charset=utf-8");
+        response.addHeader("Cache-Control", "must-revalidate, no-transform");
+        response.setDateHeader("Expries", 0);
+        response.setContentType("application/octet-stream;charset=ISO-8859-1");
+        response.setCharacterEncoding("UTF-8");
 
         String fileName = file.getName();
-        response.addHeader("Content-Disposition","attachment;filename=" + fileName);
+        response.setHeader("Content-Disposition", "attachment:filename=" + fileName);
 
-        OutputStream out = null;
+        InputStream is = null;
+        OutputStream os = null;
         try{
             is = new FileInputStream(file);
-            out = response.getOutputStream();
+            os = response.getOutputStream();
             int length = 0;
-            byte buffer[] = new byte[1024];
-            while((length = is.read(buffer)) != -1){
-                out.write(buffer, 0, length);
+            byte[] buffer = new byte[1024];
+            while ((length = is.read(buffer)) != -1){
+                os.write(buffer, 0, length);
+            }
+            os.flush();
+            if (os != null){
+                os.close();
             }
             if (is != null){
                 is.close();
             }
-            if (out != null){
-                out.close();
-            }
-        } catch (Exception e) {
-            logger.error("get file error with path: " + filePath);
+        }catch (Exception e){
+            logger.error("file tranfer error: {}", file.getName());
             e.printStackTrace();
         }
+
     }
 }
