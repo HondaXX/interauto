@@ -10,10 +10,17 @@ logging:
 
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.31.228:3306/interauto?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
-    username: auto
-    password: 688451a
+    dbauto:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://192.168.31.228:3306/interauto?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
+      username: auto
+      password: 688451a
+
+    dbtest:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://192.168.31.228:3306/testtest?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
+      username: auto
+      password: 688451a
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml

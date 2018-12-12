@@ -1,4 +1,4 @@
-package com.honda.interauto.dao;
+package com.honda.interauto.dao.auto;
 
 import com.honda.interauto.dto.InterCaseDto;
 import org.apache.ibatis.annotations.Param;

@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.honda.interauto.dao.InterCaseDao">
+<mapper namespace="com.honda.interauto.dao.auto.InterCaseDao">
     <sql id="interCaseInfo">
       caseId,DNS,caseAim,interUrl,requestMethod,needDesignReq,requestJson,reqParam,needInit,initCode,needDesignRes,
       expectRes,resParam,needRoll,rollCode,usedParam,createTime,updataTime

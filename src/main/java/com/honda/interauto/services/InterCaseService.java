@@ -1,6 +1,6 @@
 package com.honda.interauto.services;
 
-import com.honda.interauto.dao.InterCaseDao;
+import com.honda.interauto.dao.auto.InterCaseDao;
 import com.honda.interauto.dto.InterCaseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
