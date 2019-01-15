@@ -1,7 +1,5 @@
 package com.honda.interauto.controllers;
 
-
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.honda.interauto.dto.InterCaseDto;
 import com.honda.interauto.pojo.BaseError;
 import com.honda.interauto.pojo.ReqPojo;
@@ -16,12 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/ApiSetter")
 @Service
-
 public class SetApiCtrl {
     Logger logger = LogManager.getLogger(SetApiCtrl.class);
 
@@ -100,7 +96,7 @@ public class SetApiCtrl {
 
     }
 
-    @PostMapping(value = "GetAllApi.json", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/GetAllApi.json", produces = "application/json;charset=UTF-8")
     public ResPojo getAllApi(@RequestBody ReqPojo reqInfo){
         List<InterCaseDto> interCaseList = interCaseService.getAllInterCases();
         if (interCaseList != null && interCaseList.size() > 0){
@@ -115,7 +111,7 @@ public class SetApiCtrl {
         }
     }
 
-    @PostMapping(value = "GetApiByAim.json", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/GetApiByAim.json", produces = "application/json;charset=UTF-8")
     public ResPojo getApiByAim(@RequestBody ReqPojo reqInfo){
         List<InterCaseDto> interCaseList = interCaseService.getInterCaseByCaseAim(reqInfo.getRequestBody().get("caseAim").toString());
         if (interCaseList != null && interCaseList.size() > 0){

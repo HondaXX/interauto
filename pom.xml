@@ -96,6 +96,12 @@
 			<version>2.8.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.47</version>
+		</dependency>
+
 		<!--map转为obj-->
 		<dependency>
 			<groupId>commons-beanutils</groupId>
