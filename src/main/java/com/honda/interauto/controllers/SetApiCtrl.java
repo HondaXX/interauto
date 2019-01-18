@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/ApiSetter")
@@ -25,11 +26,10 @@ public class SetApiCtrl {
     private InterCaseDto interCaseDto;
     @Autowired
     private InterCaseService interCaseService;
-    @Autowired
-    private ResPojo res;
 
     @RequestMapping(value = "/NewApi.json", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResPojo newApi(@RequestBody ReqPojo reqInfo){
+        ResPojo res = new ResPojo();
         interCaseDto = (InterCaseDto) TypeChangeTool.mapToObject(reqInfo.getRequestBody(), InterCaseDto.class);
         if (interCaseDto.equals(null)){
             res.setErrorCode(BaseError.SYS_ERROR);
@@ -53,6 +53,7 @@ public class SetApiCtrl {
 
     @RequestMapping(value = "/UpdataApi.json", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResPojo updataApi(@RequestBody ReqPojo reqInfo){
+        ResPojo res = new ResPojo();
         interCaseDto = (InterCaseDto) TypeChangeTool.mapToObject(reqInfo.getRequestBody(), InterCaseDto.class);
         if (interCaseDto.equals(null)){
             res.setErrorCode(BaseError.SYS_ERROR);
@@ -75,6 +76,7 @@ public class SetApiCtrl {
 
     @PostMapping(value = "/DelApi.json", produces = "application/json;charset=UTF-8")
     public ResPojo delApi(@RequestBody ReqPojo reqInfo){
+        ResPojo res = new ResPojo();
         Integer caseId = Integer.parseInt((reqInfo.getRequestBody().get("caseId")).toString());
 
         if (null != caseId){
@@ -98,6 +100,7 @@ public class SetApiCtrl {
 
     @PostMapping(value = "/GetAllApi.json", produces = "application/json;charset=UTF-8")
     public ResPojo getAllApi(@RequestBody ReqPojo reqInfo){
+        ResPojo res = new ResPojo();
         List<InterCaseDto> interCaseList = interCaseService.getAllInterCases();
         if (interCaseList != null && interCaseList.size() > 0){
             logger.info("get " + interCaseList.size() + " nums of interCase");
@@ -113,6 +116,7 @@ public class SetApiCtrl {
 
     @PostMapping(value = "/GetApiByAim.json", produces = "application/json;charset=UTF-8")
     public ResPojo getApiByAim(@RequestBody ReqPojo reqInfo){
+        ResPojo res = new ResPojo();
         List<InterCaseDto> interCaseList = interCaseService.getInterCaseByCaseAim(reqInfo.getRequestBody().get("caseAim").toString());
         if (interCaseList != null && interCaseList.size() > 0){
             logger.info("get " + interCaseList.size() + " nums of interCase");
@@ -124,5 +128,24 @@ public class SetApiCtrl {
             res.setErrorDesc(BaseError.DB_ERROR_DESC);
             return res;
         }
+    }
+
+    @PostMapping(value = "/GetApiByModle.json", produces = "application/json;charset=UTF-8")
+    public ResPojo getApiByModle(@RequestBody ReqPojo reqInfo){
+        ResPojo res = new ResPojo();
+        Integer proId = Integer.parseInt(reqInfo.getRequestBody().get("proId").toString());
+        List<Integer> modelIdList = (List<Integer>) reqInfo.getRequestBody().get("modelId");
+        if (null == proId || modelIdList.size() == 0){
+            logger.info("传入模块信息有误,proId-->({}), modelList-->({})", proId, modelIdList.toString());
+            res.setErrorCode(BaseError.PARAM_ERROR);
+            res.setErrorDesc(BaseError.PARAM_ERROR_DESC);
+            return res;
+        }
+
+        Map<Integer, List<InterCaseDto>> proModelMap = interCaseService.getInterCaseByModel(proId, modelIdList);
+        logger.debug(proModelMap.toString());
+        res.setResCode(BaseError.RESPONSE_OK);
+        res.putData("interList", proModelMap);
+        return res;
     }
 }

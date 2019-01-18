@@ -47,14 +47,25 @@
         where caseId = #{caseId}
     </update>
 
+    <select id="getInterCaseByCaseId" parameterType="int">
+        select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1'
+        and <if test="caseId != null">t.caseId = #{caseId}</if>
+    </select>
+
     <select id="getAllInterCases" resultType="com.honda.interauto.dto.InterCaseDto">
         select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1' order by t.caseId asc
     </select>
 
     <select id="getInterCaseByCaseAim" resultType="com.honda.interauto.dto.InterCaseDto">
         select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1'
-        and <if test="caseAim != null">caseAim like CONCAT('%', #{caseAim, jdbcType=CHAR}, '%')</if>
+        and <if test="caseAim != null">t.caseAim like CONCAT('%', #{caseAim, jdbcType=CHAR}, '%')</if>
         order by t.caseId asc
     </select>
 
+    <select id="getInterCaseByModel" resultType="com.honda.interauto.dto.InterCaseDto">
+        select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1'
+        and <if test="proId != null">t.proId = #{proId}</if>
+        and <if test="modelList != null">t.modelId in (#{modelList})</if>
+        order by t.proId desc
+    </select>
 </mapper>

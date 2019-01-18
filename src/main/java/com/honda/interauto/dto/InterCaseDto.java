@@ -7,6 +7,9 @@ import java.util.Date;
 @Component
 public class InterCaseDto {
     private Integer caseId;
+    private Integer proId;
+    private Integer modelId;
+
     private String DNS;
     private String caseAim;
     private String interUrl;
@@ -28,6 +31,22 @@ public class InterCaseDto {
 
     public Integer getCaseId() {
         return caseId;
+    }
+
+    public Integer getProId() {
+        return proId;
+    }
+
+    public void setProId(Integer proId) {
+        this.proId = proId;
+    }
+
+    public Integer getModelId() {
+        return modelId;
+    }
+
+    public void setModelId(Integer modelId) {
+        this.modelId = modelId;
     }
 
     public void setCaseId(Integer caseId) {

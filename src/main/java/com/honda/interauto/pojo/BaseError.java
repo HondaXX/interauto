@@ -20,9 +20,11 @@ public interface BaseError {
     String DB_ERROR_DESC = "db error";
 
 
+    String CASE_RES_ERROR = "200";
+    String CASE_RES_ERROR_DESC = "用例响应错误";
+
     //空值
     String NULL_VALUE = "null";
-    String EMPTY_VALUE = "";
 
     //系统常量
     String RESULT_CODE = "resultCode";

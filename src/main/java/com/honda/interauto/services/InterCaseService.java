@@ -5,7 +5,10 @@ import com.honda.interauto.dto.InterCaseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class InterCaseService {
@@ -24,11 +27,33 @@ public class InterCaseService {
         return interCaseDao.deleteInterCase(caseId);
     }
 
+    public InterCaseDto getInterCaseByCaseId(Integer caseId){
+        return interCaseDao.getInterCaseByCaseId(caseId);
+    }
+
     public List<InterCaseDto> getAllInterCases(){
         return interCaseDao.getAllInterCases();
     }
 
     public List<InterCaseDto> getInterCaseByCaseAim(String caseAim){
         return interCaseDao.getInterCaseByCaseAim(caseAim);
+    }
+
+    public Map<Integer, List<InterCaseDto>> getInterCaseByModel(Integer proId, List<Integer> modelIdList){
+        List<InterCaseDto> caseList = interCaseDao.getInterCaseByModel(proId, modelIdList);
+
+        Map<Integer, List<InterCaseDto>> proModelMap = new HashMap<Integer, List<InterCaseDto>>();
+        for (Integer modelId : modelIdList){
+            List<InterCaseDto> modelListSub = new ArrayList<InterCaseDto>();
+            for (int i = 0; i < caseList.size(); i++){
+                InterCaseDto interCaseDto = caseList.get(i);
+                if (interCaseDto.getModelId() == modelId){
+                    modelListSub.add(interCaseDto);
+                }
+            }
+            proModelMap.put(modelId, modelListSub);
+            modelListSub.clear();
+        }
+        return proModelMap;
     }
 }
