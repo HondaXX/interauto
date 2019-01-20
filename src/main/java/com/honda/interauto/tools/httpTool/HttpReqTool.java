@@ -1,5 +1,6 @@
 package com.honda.interauto.tools.httpTool;
 
+import com.alibaba.fastjson.JSON;
 import com.honda.interauto.dto.InterCaseDto;
 import com.honda.interauto.tools.sysTool.TypeChangeTool;
 import org.apache.http.Header;
@@ -27,60 +28,34 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.*;
 
 public class HttpReqTool {
     private static Logger logger = LogManager.getLogger(HttpReqTool.class);
 
-    public static Map<String, String> getCookies(InterCaseDto interCaseDto){
-        logger.info("========>start case with id: " + interCaseDto.getCaseId());
-        Map<String, Object> reqMap = TypeChangeTool.strToMap(interCaseDto.getRequestJson());
-        String reqUrl = interCaseDto.getDNS() + interCaseDto.getInterUrl();
-
-        List<NameValuePair> list = getReqParamList(reqMap);
-        CloseableHttpClient client = HttpClients.createDefault();
-        CookieStore cookieStore = new BasicCookieStore();
-        client = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
-        HttpPost hp = new HttpPost(reqUrl);
+    public static StringEntity setEntity(String reqStr) {
+        StringEntity se = null;
         try {
-            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(list, "UTF-8");
-            hp.setEntity(entity);
-            CloseableHttpResponse response = client.execute(hp);
-        }catch (Exception e){
-            logger.error("run case error id: " + interCaseDto.getCaseId());
+            se = new StringEntity(reqStr);
+            se.setContentEncoding("UTF-8");
+            se.setContentType("application/json");
+            return se;
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            return null;
         }
-        //根据实际情况自定义cookies值
-        String JSESSIONID = null;
-        String cookie_qluin = null;
-        String cookie_qlskey = null;
-        List<Cookie> cookieList = cookieStore.getCookies();
-        Map<String, String> cacheMap = new HashMap<String, String>();
-        for (int i = 0; i < cookieList.size(); i++) {
-            if (cookieList.get(i).getName().equals("JSESSIONID")) {
-                JSESSIONID = cookieList.get(i).getValue();
-                cacheMap.put("JSESSIONID", JSESSIONID);
-            }
-            if (cookieList.get(i).getName().equals("qluin")) {
-                cookie_qluin= cookieList.get(i).getValue();
-                cacheMap.put("qluin", cookie_qluin);
-            }
-            if (cookieList.get(i).getName().equals("qlskey")) {
-                cookie_qlskey= cookieList.get(i).getValue();
-                cacheMap.put("qlskey", cookie_qlskey);
-            }
-        }
-        return cacheMap;
     }
 
-    public static String httpReq(InterCaseDto interCaseDto, String cookie){
-        logger.info("========>start case with id: " + interCaseDto.getCaseId());
-        Map<String, Object> reqMap = TypeChangeTool.strToMap(interCaseDto.getRequestJson());
+    public static String httpReqJson(InterCaseDto interCaseDto, String cookie){
+        Integer caseID = interCaseDto.getCaseId();
+        logger.info("========>start case with id: " + caseID);
+        Map<String, Object> reqMap = (Map) JSON.parse(interCaseDto.getRequestJson());
         String reqUrl = interCaseDto.getDNS() + interCaseDto.getInterUrl();
 
-        CloseableHttpClient client = HttpClients.createDefault();
         if (interCaseDto.getRequestMethod().equals("1")){
+            CloseableHttpClient client = HttpClients.createDefault();
             try {
                 URIBuilder uri = new URIBuilder(reqUrl);
                 HttpGet hg = new HttpGet(uri.build());
@@ -96,19 +71,16 @@ public class HttpReqTool {
                 return null;
             }
         }else if (interCaseDto.getRequestMethod().equals("0")){
-            List<NameValuePair> list = getReqParamList(reqMap);
+            CloseableHttpClient client = HttpClients.createDefault();
             try{
                 HttpPost hp = new HttpPost(reqUrl);
                 if (null != cookie){
-//                    hp.setHeader("Content-Type", "application/x-www-form-urlencoded");
-//                    new BasicHeader("Content-Type", "application/form-data; charset=utf-8");
                     hp.setHeader("Cookie", cookie);
                 }
-                logger.info("call request url: " + reqUrl + "\n" + "call request param: " + reqMap.toString() + "\n" + "call request response: ");
-                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(list, "UTF-8");
-//                StringEntity entity = new StringEntity(reqMap.toString());
-//                entity.setContentType("application/form-data");
+                StringEntity entity = setEntity(reqUrl);
                 hp.setEntity(entity);
+                logger.debug("call request url: " + reqUrl);
+                logger.debug("call request param: " + reqMap.toString());
                 CloseableHttpResponse response = client.execute(hp);
                 return returnHttpRes(response, reqMap);
             }catch (Exception e){
@@ -156,10 +128,7 @@ public class HttpReqTool {
         try{
             HttpPost hp = new HttpPost(reqUrl);
             logger.info("call request url: " + reqUrl + "\n" + "call request param: " + reqMap.toString() + "\n" + "call request response: ");
-            List<BasicNameValuePair> form = new ArrayList<BasicNameValuePair>();
-            for (String name : reqMap.keySet()) {
-                form.add(new BasicNameValuePair(name, reqMap.get(name).toString()));
-            }
+            List<NameValuePair> form = getReqParamList(reqMap);
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Charset.forName("UTF-8"));
             hp.setEntity(entity);
             CloseableHttpResponse response = client.execute(hp);
@@ -171,6 +140,46 @@ public class HttpReqTool {
         }
     }
 
+    public static Map<String, String> getCookies(InterCaseDto interCaseDto){
+        logger.info("========>start case with id: " + interCaseDto.getCaseId());
+        Map<String, Object> reqMap = TypeChangeTool.strToMap(interCaseDto.getRequestJson());
+        String reqUrl = interCaseDto.getDNS() + interCaseDto.getInterUrl();
+
+        List<NameValuePair> list = getReqParamList(reqMap);
+        CloseableHttpClient client = HttpClients.createDefault();
+        CookieStore cookieStore = new BasicCookieStore();
+        client = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+        HttpPost hp = new HttpPost(reqUrl);
+        try {
+            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(list, "UTF-8");
+            hp.setEntity(entity);
+            CloseableHttpResponse response = client.execute(hp);
+        }catch (Exception e){
+            logger.error("run case error id: " + interCaseDto.getCaseId());
+            e.printStackTrace();
+        }
+        //根据实际情况自定义cookies值
+        String JSESSIONID = null;
+        String cookie_qluin = null;
+        String cookie_qlskey = null;
+        List<Cookie> cookieList = cookieStore.getCookies();
+        Map<String, String> cacheMap = new HashMap<String, String>();
+        for (int i = 0; i < cookieList.size(); i++) {
+            if (cookieList.get(i).getName().equals("JSESSIONID")) {
+                JSESSIONID = cookieList.get(i).getValue();
+                cacheMap.put("JSESSIONID", JSESSIONID);
+            }
+            if (cookieList.get(i).getName().equals("qluin")) {
+                cookie_qluin= cookieList.get(i).getValue();
+                cacheMap.put("qluin", cookie_qluin);
+            }
+            if (cookieList.get(i).getName().equals("qlskey")) {
+                cookie_qlskey= cookieList.get(i).getValue();
+                cacheMap.put("qlskey", cookie_qlskey);
+            }
+        }
+        return cacheMap;
+    }
 
     public static List<NameValuePair> getReqParamList(Map<String, Object> reqMap){
         List<NameValuePair> list = new ArrayList<NameValuePair>();

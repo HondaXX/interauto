@@ -5,12 +5,12 @@
 
 <mapper namespace="com.honda.interauto.dao.auto.InterCaseDao">
     <sql id="interCaseInfo">
-      caseId,DNS,caseAim,interUrl,requestMethod,needDesignReq,requestJson,reqParam,needInit,initCode,needDesignRes,
+      caseId,proId,modelId,DNS,caseAim,interUrl,requestMethod,needDesignReq,requestJson,reqParam,needInit,initCode,needDesignRes,
       expectRes,resParam,needRoll,rollCode,usedParam,createTime,updataTime
 	</sql>
 
     <insert id="newInterCase" parameterType="com.honda.interauto.dto.InterCaseDto" keyProperty="id" useGeneratedKeys="true">
-      insert into t_interCase (<include refid="interCaseInfo"/>) values(#{caseId},#{DNS},#{caseAim},#{interUrl},#{requestMethod},#{needDesignReq},
+      insert into t_interCase (<include refid="interCaseInfo"/>) values(#{caseId},#{proID},#{modelId},#{DNS},#{caseAim},#{interUrl},#{requestMethod},#{needDesignReq},
         #{requestJson},#{reqParam},#{needInit},#{initCode},#{needDesignRes},#{expectRes},#{resParam},#{needRoll},#{rollCode},#{usedParam},
         (#{createTime}, '%Y-%m-%d %H:%i:%S'), #{updataTime}, '%Y-%m-%d %H:%i:%S')
     </insert>
@@ -18,8 +18,10 @@
     <update id="updataInterCase" parameterType="com.honda.interauto.dto.InterCaseDto">
         update t_interCase
         <set>
+            <if test="proId != null">proId = #{proId},</if>
+            <if test="modelId != null">modelId = #{modelId},</if>
             <if test="DNS != null">DNS = #{DNS},</if>
-            <if test="caseAim != null">caseAim = #{caseAim}</if>
+            <if test="caseAim != null">caseAim = #{caseAim},</if>
             <if test="interUrl != null">interUrl = #{interUrl},</if>
             <if test="requestMethod != null">requestMethod = #{requestMethod},</if>
             <if test="needDesignReq != null">needDesignReq = #{needDesignReq},</if>
@@ -47,7 +49,7 @@
         where caseId = #{caseId}
     </update>
 
-    <select id="getInterCaseByCaseId" parameterType="int">
+    <select id="getInterCaseByCaseId" parameterType="int" resultType="com.honda.interauto.dto.InterCaseDto">
         select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1'
         and <if test="caseId != null">t.caseId = #{caseId}</if>
     </select>
