@@ -1,5 +1,6 @@
 package com.honda.interauto.tools.sysTool;
 
+import com.google.gson.internal.LinkedTreeMap;
 import com.honda.interauto.dao.auto.GetParamValue;
 import com.honda.interauto.pojo.SqlVo;
 import org.apache.commons.lang3.StringUtils;
@@ -29,28 +30,28 @@ public class ParamTool {
         return vfpMap;
     }
 
-    public static Object replaceSettingParam(Map<String, Object> paramAndValueMap, Map<String, Object> reqMap) {
+    public static Object replaceSettingParam(Map<String, Object> paramAndValueMap, Map<String, Object> originMap) {
         Set<String> paramSet = paramAndValueMap.keySet();
-        Set<String> keySetFirst = reqMap.keySet();
+        Set<String> keySetFirst = originMap.keySet();
 
         List<String> mapParamList = new ArrayList<String>();
-        for(String paramReq : reqMap.keySet()) {
-            if (reqMap.get(paramReq) instanceof Map) {
+        for(String paramReq : originMap.keySet()) {
+            if (originMap.get(paramReq) instanceof Map) {
                 mapParamList.add(paramReq);
             }
         }
 
         for(String param : paramSet) {
-            if (keySetFirst.contains(param) && reqMap.get(param).equals("#")) {
-                reqMap.put(param, paramAndValueMap.get(param));
-                return reqMap;
+            if (keySetFirst.contains(param) && originMap.get(param).equals("#")) {
+                originMap.put(param, paramAndValueMap.get(param));
+                return originMap;
             }else {
                 for(String mapParam : mapParamList) {
-                    Map<String, Object> secondMap = (Map<String, Object>) reqMap.get(mapParam);
+                    Map<String, Object> secondMap = (Map<String, Object>) originMap.get(mapParam);
                     Set<String> keySetSecond = secondMap.keySet();
                     if (keySetSecond.contains(param) && secondMap.get(param).equals("#")) {
                         secondMap.put(param, paramAndValueMap.get(param));
-                        reqMap.put(mapParam, secondMap);
+                        originMap.put(mapParam, secondMap);
                     }else {
                         logger.info("====>bind param error, can't find param: " + param);
                         return param;
@@ -58,7 +59,7 @@ public class ParamTool {
                 }
             }
         }
-        return reqMap;
+        return originMap;
     }
 
     public static boolean operateDB(Map<String, Object> dbCodeMap, GetParamValue gpv, SqlVo sqlVo) {
@@ -82,4 +83,51 @@ public class ParamTool {
         return true;
     }
 
+    public static Map<String, String> compareRes(Map<String, Object> trueResMap, Map<String, Object> trueRxpectMap) {
+        //对比结果存放，0失败 1成功
+        Map<String, String> compareResMap = new HashMap<String, String>();
+
+        for(String trueKey : trueResMap.keySet()) {
+            if (trueRxpectMap.containsKey(trueKey)) {
+                Object trueValue = trueResMap.get(trueKey);
+                Object expectValue = trueRxpectMap.get(trueKey);
+                //如果返回有多层，继续往下走，最多处理两层
+                if (!(trueValue instanceof LinkedTreeMap && expectValue instanceof LinkedTreeMap)) {
+                    if (!trueValue.equals(expectValue)) {
+                        logger.info("========>外层结果比对不通过: {}--[result: {}, except: {}]", trueKey, trueValue, expectValue);
+                        compareResMap.put("comRes", "0");
+                        compareResMap.put("unequalParam", trueKey);
+                        return compareResMap;
+                    }
+                }else{
+                    Map<String, Object> trueValueMap = (Map<String, Object>) trueValue;
+                    Map<String, Object> expectValueMap = (Map<String, Object>) expectValue;
+                    for(String childTrueKey : trueValueMap.keySet()) {
+                        if (expectValueMap.containsKey(childTrueKey)) {
+                            Object childTrueValue = trueValueMap.get(childTrueKey);
+                            Object childExpectValue = expectValueMap.get(childTrueKey);
+                            if (!childTrueValue.equals(childExpectValue)) {
+                                logger.info("========>内层结果比对不通过: {}--[result: {}, except: {}]", childTrueKey, childTrueValue, childExpectValue);
+                                compareResMap.put("comRes", "0");
+                                compareResMap.put("unequalParam", childTrueKey);
+                                return compareResMap;
+                            }
+                        }else {
+                            logger.info("========>不存在的内层对比值: " + childTrueKey);
+                            compareResMap.put("comRes", "0");
+                            compareResMap.put("unequalParam", childTrueKey);
+                            return compareResMap;
+                        }
+                    }
+                }
+            }else {
+                logger.info("========>不存在的内层对比值: " + trueKey);
+                compareResMap.put("comRes", "0");
+                compareResMap.put("unequalParam", trueKey);
+                return compareResMap;
+            }
+        }
+        compareResMap.put("comRes", "1");
+        return compareResMap;
+    }
 }

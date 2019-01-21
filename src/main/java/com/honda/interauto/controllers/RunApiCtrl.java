@@ -69,6 +69,7 @@ public class RunApiCtrl {
 
             if (interCaseDto.getNeedInit().equals("1")){
                 //用例初始化执行
+                logger.info("========>开始初始化用例数据");
                 Map<String, Object> dbSCodeMap = (Map) JSON.parse(interCaseDto.getInitCode());
                 if (!ParamTool.operateDB(dbSCodeMap, gpv, sqlVo)){
                     logger.info("========>初始化用例数据失败");
@@ -79,24 +80,24 @@ public class RunApiCtrl {
             }
 
             if (interCaseDto.getNeedDesignReq().equals("1")){
-                //请求前获取参数化请求字段值
-                logger.debug("========>参数化开始");
+                //请求前参数化请求字段值
+                logger.debug("========>开始请求参数化");
                 Map<String, Object> originReqMap = (Map) JSON.parse(interCaseDto.getRequestJson());
                 Map<String, Object> paramSqlMap = (Map) JSON.parse(interCaseDto.getReqParam());
                 Object paramWithValueMap = ParamTool.getValueForParam(paramSqlMap, gpv, sqlVo);
                 if (paramWithValueMap instanceof String){
-                    logger.info("========>获取字段值失败");
+                    logger.info("========>请求获取字段值失败");
                     caseResMap.put(caseId, BaseError.CASE_PARAM_GETV_DESC + "{" + paramWithValueMap + "}");
                     continue;
                 }
                 //获取值替换原有请求值
                 Object trueReqMap = ParamTool.replaceSettingParam((Map<String, Object>) paramWithValueMap, originReqMap);
                 if (trueReqMap instanceof String){
-                    logger.info("========>替换参数化值失败");
+                    logger.info("========>请求替换参数化值失败");
                     caseResMap.put(caseId, BaseError.CASE_PARAM_REP_DESC + "{" + trueReqMap + "}");
                     continue;
                 }
-                logger.info("========>参数化成功，替换请求值...");
+                logger.info("========>请求参数化成功");
                 interCaseDto.setRequestJson(trueReqMap.toString());
             }
 
@@ -108,9 +109,57 @@ public class RunApiCtrl {
                 continue;
             }
 
+            //返回结果与替换后预期转为map，后面做对比用到
             Map<String, Object> resMap = (Map<String, Object>) JSON.parse(resInfo);
-            //开始处理响应结果
+            Map<String, Object> trueExpectMap = new HashMap<String, Object>();
 
+            //响应后参数化结果字段值
+            if (interCaseDto.getNeedDesignRes().equals("1")){
+                logger.debug("========>开始结果参数化");
+                Map<String, Object> originResMap = (Map) JSON.parse(interCaseDto.getExpectRes());
+                Map<String, Object> paramSqlMap = (Map) JSON.parse(interCaseDto.getResParam());
+                Object paramWithValueMap = ParamTool.getValueForParam(paramSqlMap, gpv, sqlVo);
+                if (paramWithValueMap instanceof String){
+                    logger.info("========>结果获取字段值失败");
+                    caseResMap.put(caseId, BaseError.CASE_PARAM_GETV_DESC + "{" + paramWithValueMap + "}");
+                    continue;
+                }
+                //获取值替换原有预期值
+                Object trueExpectO = ParamTool.replaceSettingParam((Map<String, Object>) paramWithValueMap, originResMap);
+                if (trueExpectO instanceof String){
+                    logger.info("========>结果替换参数化值失败");
+                    caseResMap.put(caseId, BaseError.CASE_PARAM_REP_DESC + "{" + trueExpectO + "}");
+                    continue;
+                }
+                trueExpectMap = (Map<String, Object>) JSON.parse(trueExpectO.toString());
+                logger.info("========>结果参数化成功");
+            }else {
+                trueExpectMap = (Map<String, Object>) JSON.parse(interCaseDto.getExpectRes());
+            }
+
+            //开始做对比
+            Map<String, String> compareRes = ParamTool.compareRes(resMap, trueExpectMap);
+            if (compareRes.get("comRes").equals("0")){
+//                logger.info("========>这里从map里取不通过的值存库");
+                String failStr = compareRes.get("unequalParam");
+                caseResMap.put(caseId, BaseError.CASE_CONP_UNEQ_DESC + "{" + failStr + "}");
+                continue;
+            }
+
+            //对比成功开始还原数据库
+            if (interCaseDto.getNeedRoll().equals("1")){
+                //用例初始化执行
+                logger.info("========>开始还原用例数据");
+                Map<String, Object> dbSCodeMap = (Map) JSON.parse(interCaseDto.getRollCode());
+                if (!ParamTool.operateDB(dbSCodeMap, gpv, sqlVo)){
+                    logger.info("========>还原用例数据失败");
+                    caseResMap.put(caseId, BaseError.CASE_DB_OPER_DESC);
+                    continue;
+                }
+                logger.info("========>还原用例数据成功");
+            }
+
+            caseResMap.put(caseId, BaseError.CASE_OK);
         }
         res.setResCode(BaseError.RESPONSE_OK);
         res.putData("resDetail", caseResMap);
