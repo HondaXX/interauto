@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.honda.interauto.dao.auto.GetParamValue">
+    <select id="getParamValue" parameterType="com.honda.interauto.pojo.SqlVo" resultType="String">
+		${sqlStr}
+	</select>
+
+    <update id="updateSql" parameterType="com.honda.interauto.pojo.SqlVo">
+		${sqlStr}
+	</update>
+</mapper>

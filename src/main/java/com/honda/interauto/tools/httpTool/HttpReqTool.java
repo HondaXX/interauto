@@ -39,7 +39,7 @@ public class HttpReqTool {
         StringEntity se = null;
         try {
             se = new StringEntity(reqStr);
-            se.setContentEncoding("UTF-8");
+//            se.setContentEncoding("UTF-8");
             se.setContentType("application/json");
             return se;
         } catch (UnsupportedEncodingException e) {
@@ -50,7 +50,6 @@ public class HttpReqTool {
 
     public static String httpReqJson(InterCaseDto interCaseDto, String cookie){
         Integer caseID = interCaseDto.getCaseId();
-        logger.info("========>start case with id: " + caseID);
         Map<String, Object> reqMap = (Map) JSON.parse(interCaseDto.getRequestJson());
         String reqUrl = interCaseDto.getDNS() + interCaseDto.getInterUrl();
 
@@ -77,8 +76,9 @@ public class HttpReqTool {
                 if (null != cookie){
                     hp.setHeader("Cookie", cookie);
                 }
-                StringEntity entity = setEntity(reqUrl);
+                StringEntity entity = setEntity(interCaseDto.getRequestJson());
                 hp.setEntity(entity);
+                hp.setHeader("Content-Type", "application/json");
                 logger.debug("call request url: " + reqUrl);
                 logger.debug("call request param: " + reqMap.toString());
                 CloseableHttpResponse response = client.execute(hp);
@@ -198,7 +198,7 @@ public class HttpReqTool {
         if (statusCode == 200){
             try {
                 String resInfo = EntityUtils.toString(response.getEntity(), "UTF-8");
-                logger.info("========>case response: " + resInfo);
+                logger.debug("========>case response: " + resInfo);
                 return resInfo;
             }catch (Exception e){
                 logger.error("get response Entity error!");
