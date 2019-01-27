@@ -31,8 +31,8 @@ public class InterCaseService {
         return interCaseDao.getInterCaseByCaseId(caseId);
     }
 
-    public List<InterCaseDto> getAllInterCases(){
-        return interCaseDao.getAllInterCases();
+    public List<InterCaseDto> getAllInterCases(Integer proId, Integer modelId){
+        return interCaseDao.getAllInterCases(proId, modelId);
     }
 
     public List<InterCaseDto> getInterCaseByCaseAim(String caseAim){
@@ -43,7 +43,9 @@ public class InterCaseService {
         List<InterCaseDto> caseList = interCaseDao.getInterCaseByModel(proId, modelIdList);
 
         Map<Integer, List<InterCaseDto>> proModelMap = new HashMap<Integer, List<InterCaseDto>>();
+
         for (Integer modelId : modelIdList){
+            Map<Integer, List<InterCaseDto>> proModelMapTemp = new HashMap<Integer, List<InterCaseDto>>();
             List<InterCaseDto> modelListSub = new ArrayList<InterCaseDto>();
             for (int i = 0; i < caseList.size(); i++){
                 InterCaseDto interCaseDto = caseList.get(i);
@@ -51,8 +53,8 @@ public class InterCaseService {
                     modelListSub.add(interCaseDto);
                 }
             }
-            proModelMap.put(modelId, modelListSub);
-            modelListSub.clear();
+            proModelMapTemp.put(modelId, modelListSub);
+            proModelMap.putAll(proModelMapTemp);
         }
         return proModelMap;
     }

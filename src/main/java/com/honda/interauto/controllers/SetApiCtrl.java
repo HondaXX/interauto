@@ -1,6 +1,7 @@
 package com.honda.interauto.controllers;
 
 import com.honda.interauto.dto.InterCaseDto;
+import com.honda.interauto.dto.ProDto;
 import com.honda.interauto.pojo.BaseError;
 import com.honda.interauto.pojo.ReqPojo;
 import com.honda.interauto.pojo.ResPojo;
@@ -12,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/ApiSetter")
@@ -101,7 +100,10 @@ public class SetApiCtrl {
     @PostMapping(value = "/GetAllApi.json", produces = "application/json;charset=UTF-8")
     public ResPojo getAllApi(@RequestBody ReqPojo reqInfo){
         ResPojo res = new ResPojo();
-        List<InterCaseDto> interCaseList = interCaseService.getAllInterCases();
+        Integer proId = Integer.parseInt(reqInfo.getRequestBody().get("proId").toString());
+        Integer modelId = Integer.parseInt(reqInfo.getRequestBody().get("modelId").toString());
+
+        List<InterCaseDto> interCaseList = interCaseService.getAllInterCases(proId, modelId);
         if (interCaseList != null && interCaseList.size() > 0){
             logger.info("get " + interCaseList.size() + " nums of interCase");
             res.setResCode(BaseError.RESPONSE_OK);

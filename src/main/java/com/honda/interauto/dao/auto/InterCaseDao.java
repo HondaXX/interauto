@@ -17,7 +17,7 @@ public interface InterCaseDao {
 
     public InterCaseDto getInterCaseByCaseId(@Param("caseId") Integer caseId);
 
-    public List<InterCaseDto> getAllInterCases();
+    public List<InterCaseDto> getAllInterCases(@Param("proId")Integer proId, @Param("modelId")Integer modelId);
 
     public List<InterCaseDto> getInterCaseByCaseAim(@Param("caseAim")String caseAim);
 

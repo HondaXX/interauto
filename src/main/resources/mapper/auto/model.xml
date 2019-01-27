@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.honda.interauto.dao.auto.ModelDao">
+    <resultMap id="baseModelMap" type="com.honda.interauto.dto.ModelDto">
+        <id column="proId" property="proId"/>
+        <id column="modelId" property="modelId"/>
+        <result column="des" property="des"/>
+    </resultMap>
+
+    <sql id="modelInfo">
+		proId, modelId, des
+	</sql>
+
+    <select id="getProModels" resultMap="baseModelMap">
+        select <include refid="modelInfo"/> from t_model t where 1 = 1 and
+        <if test="proId != null">t.proId = #{proId}</if>
+    </select>
+</mapper>

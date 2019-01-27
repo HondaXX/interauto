@@ -55,7 +55,10 @@
     </select>
 
     <select id="getAllInterCases" resultType="com.honda.interauto.dto.InterCaseDto">
-        select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1' order by t.caseId asc
+        select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1'
+        and <if test="proId != null">t.proId = #{proId}</if>
+        and <if test="modelId != null">t.modelId = #{modelId}</if>
+        order by t.caseId asc
     </select>
 
     <select id="getInterCaseByCaseAim" resultType="com.honda.interauto.dto.InterCaseDto">
@@ -67,7 +70,12 @@
     <select id="getInterCaseByModel" resultType="com.honda.interauto.dto.InterCaseDto">
         select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1'
         and <if test="proId != null">t.proId = #{proId}</if>
-        and <if test="modelList != null">t.modelId in (#{modelList})</if>
+        and <if test="modelList != null">t.modelId in
+                <foreach item="modelList" index="index" collection="modelList"
+                         open="(" separator="," close=")">
+                    #{modelList}
+                </foreach>
+            </if>
         order by t.proId desc
     </select>
 </mapper>
