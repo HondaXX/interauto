@@ -59,6 +59,13 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!--redis-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<version>1.5.2.RELEASE</version>
+		</dependency>
+
 		<!--<dependency>-->
 		<!--<groupId>org.aspectj</groupId>-->
 		<!--<artifactId>aspectjweaver</artifactId>-->
@@ -152,7 +159,12 @@
 			<artifactId>httpmime</artifactId>
 			<version>4.5.3</version>
 		</dependency>
-
+		<!--登录认证-->
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>3.3.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

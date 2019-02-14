@@ -1,16 +1,20 @@
 package com.honda.interauto.tools.httpTool;
 
+import com.alibaba.fastjson.JSONArray;
 import com.honda.interauto.dto.ServerDto;
 import com.honda.interauto.pojo.InnerResPojo;
 import com.honda.interauto.pojo.ReqPojo;
 import com.honda.interauto.pojo.ResPojo;
 import com.honda.interauto.services.ServerService;
+import com.honda.interauto.tools.dbTool.RedisUtil;
+import com.honda.interauto.tools.sysTool.SysInitRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,18 +26,16 @@ import java.util.List;
 public class AopTool {
     private Logger logger = LogManager.getLogger(AopTool.class);
 
-    @Autowired(required = false)
-    private ServerService serverService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Around("execution(* com.honda.interauto.controllers.*.*(..))")
     public Object checkInter(ProceedingJoinPoint joinpoint){
+        RedisUtil ru = new RedisUtil();
+        ru.setRedisTemplate(redisTemplate);
 
-        List<String> serverIdList = new ArrayList<String>();
-        List<ServerDto> serverDtoList = serverService.getAllServers();
-        for(int i = 0; i < serverDtoList.size(); i++){
-            String serverId = serverDtoList.get(i).getServerId();
-            serverIdList.add(serverId);
-        }
+        String a = ru.get("apis").toString();
+        List<String> serverIdList = JSONArray.parseArray(a, String.class);
 
         HttpServletRequest request = RequestTool.getCurrentRequest();
         ReqPojo rp = new ReqPojo();
