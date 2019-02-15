@@ -32,6 +32,10 @@ public interface BaseError {
     String CASE_COMP_UNEQ = "204";
     String CASE_CONP_UNEQ_DESC = "结果比对不通过";
 
+    //用户错误
+    String USER_NOTFOUND = "300";
+    String USER_NOTFOUND_DESC = "登录名或密码错误";
+
     //空值
     String NULL_VALUE = "null";
 

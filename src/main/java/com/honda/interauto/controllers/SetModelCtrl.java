@@ -9,6 +9,8 @@ import com.honda.interauto.pojo.ResPojo;
 import com.honda.interauto.services.ModelService;
 import com.honda.interauto.services.ProService;
 import com.honda.interauto.tools.dbTool.RedisUtil;
+import com.honda.interauto.tools.sysTool.SysInitData;
+import com.honda.interauto.tools.sysTool.SysInitRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,10 +74,12 @@ public class SetModelCtrl {
         RedisUtil ru = new RedisUtil();
         ru.setRedisTemplate(redisTemplate);
         String a = ru.get(getVal).toString();
-        logger.debug(a);
         List<String> listO = JSONArray.parseArray(a, String.class);
-        logger.info(listO.size());
+
+        List<String> listT = SysInitData.serverList;
+
         res.putData("val", listO);
+        res.putData("val2", listT);
         return res;
     }
 }

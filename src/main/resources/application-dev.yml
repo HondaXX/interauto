@@ -17,11 +17,12 @@ spring:
       username: riskAuto #auto  riskAuto
       password: Ws2018!07@ #688451a  Ws2018!07@
 
-#    dbtest:
-#      driver-class-name: com.mysql.cj.jdbc.Driver
+    dbtest:
+      driver-class-name: com.mysql.cj.jdbc.Driver
 #      jdbc-url: jdbc:mysql://192.168.31.228:3306/testtest?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
-#      username: auto
-#      password: 688451a
+      jdbc-url: jdbc:mysql://10.83.16.13:3306/riskAuto?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
+      username: riskAuto  #auto   riskAuto
+      password: Ws2018!07@ #688451a   Ws2018!07@
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml

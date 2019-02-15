@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.honda.interauto.dao.user.UserDao">
+    <resultMap id="userMap" type="com.honda.interauto.dto.UserDto">
+        <result property="id" column="id"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="age" column="age"/>
+        <result property="createTime" column="createTime"/>
+        <result property="updataTime" column="updataTime"/>
+    </resultMap>
+
+    <sql id="userInfo">
+		id, name, password, age, createTime, updateTime
+	</sql>
+
+    <select id="getAllUsers" resultType="com.honda.interauto.dto.UserDto">
+        select <include refid="userInfo"/> from t_user where status = '0'
+    </select>
+
+    <select id="identifyUserByNP" parameterType="java.lang.String" resultMap="userMap">
+        select <include refid="userInfo"/> from t_user t where t.status = '0'
+        and <if test="name != null">t.name = #{name}</if>
+        and <if test="password != null">t.password = #{password}</if>
+    </select>
+
+</mapper>

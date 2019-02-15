@@ -33,22 +33,26 @@ public class SysInitRunner implements ApplicationRunner {
 
         List<String> serverIdList = new ArrayList<String>();
 
-        RedisUtil ru = new RedisUtil();
-        ru.setRedisTemplate(redisTemplate);
+        RedisUtil ruT = new RedisUtil();
+        ruT.setRedisTemplate(redisTemplate);
 
-        if (ru.hasKey("apis")){
-            ru.del("apis");
+        if (ruT.hasKey("apis")){
+            ruT.del("apis");
         }
+
+        SysInitData.ru = ruT;
+        logger.info("初始化redis成功");
 
         List<ServerDto> serverDtoList = serverService.getAllServers();
         for(int i = 0; i < serverDtoList.size(); i++){
             String serverId = serverDtoList.get(i).getServerId();
             serverIdList.add(serverId);
         }
+        SysInitData.serverList = serverIdList;
 
         String listJsonStr = JSONArray.parseArray(JSON.toJSONString(serverIdList)).toJSONString();
-        ru.set("apis", listJsonStr);
-        if (ru.hasKey("apis")){
+        ruT.set("apis", listJsonStr);
+        if (ruT.hasKey("apis")){
             logger.info("complate init api!!!");
         }else {
             logger.info("init api failed, please check the server!");

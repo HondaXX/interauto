@@ -12,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 //@ComponentScan(basePackages={"com.honda.interauto.dao.auto","com.honda.interauto.dao.test"})
 
-@MapperScan({"com.honda.interauto.dao.auto","com.honda.interauto.dao.test"})
+@MapperScan({"com.honda.interauto.dao.auto","com.honda.interauto.dao.user"})
 @ComponentScan
 //选择手动注入bean
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, MybatisAutoConfiguration.class})
