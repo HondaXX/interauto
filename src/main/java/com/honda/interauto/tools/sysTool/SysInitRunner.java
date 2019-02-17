@@ -41,7 +41,6 @@ public class SysInitRunner implements ApplicationRunner {
         }
 
         SysInitData.ru = ruT;
-        logger.info("初始化redis成功");
 
         List<ServerDto> serverDtoList = serverService.getAllServers();
         for(int i = 0; i < serverDtoList.size(); i++){
@@ -51,9 +50,11 @@ public class SysInitRunner implements ApplicationRunner {
         SysInitData.serverList = serverIdList;
 
         String listJsonStr = JSONArray.parseArray(JSON.toJSONString(serverIdList)).toJSONString();
+        logger.info(listJsonStr);
         ruT.set("apis", listJsonStr);
         if (ruT.hasKey("apis")){
             logger.info("complate init api!!!");
+            logger.info("初始化redis成功");
         }else {
             logger.info("init api failed, please check the server!");
         }

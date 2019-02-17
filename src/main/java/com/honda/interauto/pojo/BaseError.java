@@ -11,7 +11,7 @@ public interface BaseError {
     String NULL_ERROR = "101";
     String NULL_ERROR_DESC = "serverId is null";
     String FOMAT_ERROR = "102";
-    String FOMAT_ERROR_DESC = "Format error";
+    String FOMAT_ERROR_DESC = "请求参数格式错误";
     String SERVERID_NOT_FOUND = "103";
     String SERVERID_NOT_FOUND_DESC = "serverId not found";
     String PARAM_ERROR = "104";
@@ -35,6 +35,10 @@ public interface BaseError {
     //用户错误
     String USER_NOTFOUND = "300";
     String USER_NOTFOUND_DESC = "登录名或密码错误";
+    String USER_TOKENLESS = "301";
+    String USER_TOKENLESS_DESC = "token为空";
+    String USER_TOKENOVERDUE = "302";
+    String USER_TOKENOVERDUE_DESC = "token过期或在其他地方登录，请重新登录";
 
     //空值
     String NULL_VALUE = "null";

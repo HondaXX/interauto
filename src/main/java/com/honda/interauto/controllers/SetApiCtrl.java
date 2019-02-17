@@ -1,7 +1,6 @@
 package com.honda.interauto.controllers;
 
 import com.honda.interauto.dto.InterCaseDto;
-import com.honda.interauto.dto.ProDto;
 import com.honda.interauto.pojo.BaseError;
 import com.honda.interauto.pojo.ReqPojo;
 import com.honda.interauto.pojo.ResPojo;
@@ -104,32 +103,30 @@ public class SetApiCtrl {
         Integer modelId = Integer.parseInt(reqInfo.getRequestBody().get("modelId").toString());
 
         List<InterCaseDto> interCaseList = interCaseService.getAllInterCases(proId, modelId);
-        if (interCaseList != null && interCaseList.size() > 0){
-            logger.info("get " + interCaseList.size() + " nums of interCase");
-            res.setResCode(BaseError.RESPONSE_OK);
-            res.putData("interList", interCaseList);
-            return res;
-        }else {
+        if (interCaseList == null && interCaseList.size() == 0){
             res.setErrorCode(BaseError.DB_ERROR);
             res.setErrorDesc(BaseError.DB_ERROR_DESC);
             return res;
         }
+        logger.info("get {} nums of interCase",interCaseList.size());
+        res.setResCode(BaseError.RESPONSE_OK);
+        res.putData("interList", interCaseList);
+        return res;
     }
 
     @PostMapping(value = "/GetApiByAim.json", produces = "application/json;charset=UTF-8")
     public ResPojo getApiByAim(@RequestBody ReqPojo reqInfo){
         ResPojo res = new ResPojo();
         List<InterCaseDto> interCaseList = interCaseService.getInterCaseByCaseAim(reqInfo.getRequestBody().get("caseAim").toString());
-        if (interCaseList != null && interCaseList.size() > 0){
-            logger.info("get " + interCaseList.size() + " nums of interCase");
-            res.setResCode(BaseError.RESPONSE_OK);
-            res.putData("interList", interCaseList);
-            return res;
-        }else {
+        if (interCaseList == null && interCaseList.size() == 0){
             res.setErrorCode(BaseError.DB_ERROR);
             res.setErrorDesc(BaseError.DB_ERROR_DESC);
             return res;
         }
+        logger.info("get {} nums of interCase", interCaseList.size());
+        res.setResCode(BaseError.RESPONSE_OK);
+        res.putData("interList", interCaseList);
+        return res;
     }
 
     @PostMapping(value = "/GetApiByModle.json", produces = "application/json;charset=UTF-8")

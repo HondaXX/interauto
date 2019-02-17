@@ -48,6 +48,4 @@ public class ResPojo extends HashMap<String, Object>{
             return false;
         }
     }
-
-
 }
