@@ -7,6 +7,7 @@ import com.honda.interauto.pojo.ReqPojo;
 import com.honda.interauto.pojo.ResPojo;
 import com.honda.interauto.services.UserServices;
 import com.honda.interauto.tools.httpTool.JwtAuthTool;
+import com.honda.interauto.tools.httpTool.RequestTool;
 import com.honda.interauto.tools.sysTool.OtherTool;
 import com.honda.interauto.tools.sysTool.SysInitData;
 import org.apache.logging.log4j.LogManager;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping(value = "/UserManage")
@@ -56,9 +59,7 @@ public class UserCtrl {
             SysInitData.ru.set(isLoginStr, idKey + "&" + token, 3600);
         }else {
             String oldToken = OtherTool.splitStr(SysInitData.ru.get(isLoginStr).toString(), "&")[1];
-            logger.info(oldToken);
             SysInitData.ru.del(oldToken);
-            logger.info(SysInitData.ru.hasKey(oldToken));
             SysInitData.ru.del(isLoginStr);
             token = JwtAuthTool.getToken(userDto) + System.currentTimeMillis();
             SysInitData.ru.set(token, userDto, 3600);
@@ -69,6 +70,47 @@ public class UserCtrl {
         res.putData("user", SysInitData.ru.get(token));
         logger.info("{}-用户登录成功", userName);
         logger.debug(JSONObject.toJSON(res));
+        return res;
+    }
+
+    @PostMapping(value = "/loginOut.json", produces = "application/json;charset=UTF-8")
+    public ResPojo loginOut(@RequestBody ReqPojo reqInfo){
+        HttpServletRequest request = RequestTool.getCurrentRequest();
+        String tokenStr = request.getHeader("token");
+        if (tokenStr == null){
+            logger.info("========>请求token为空,退出登录失败");
+            ResPojo res = new ResPojo();
+            res.setErrorCode(BaseError.USER_TOKENLESS);
+            res.setErrorDesc(BaseError.USER_TOKENLESS_DESC);
+            return res;
+        }
+
+        if (!SysInitData.ru.hasKey(tokenStr)){
+            logger.info("========>退出登录失败,错误的token信息:{}" + tokenStr);
+            ResPojo res = new ResPojo();
+            res.setErrorCode(BaseError.USER_TOKENOVERDUE);
+            res.setErrorDesc(BaseError.USER_TOKENOVERDUE_DESC);
+            return res;
+        }
+
+        Integer useId = Integer.parseInt(reqInfo.getRequestBody().get("id").toString());
+        UserDto user = (UserDto) SysInitData.ru.get(tokenStr);
+        if (!(user.getId() == useId)){
+            logger.info("========>操作用户与token信息不匹配:{}" + tokenStr);
+            ResPojo res = new ResPojo();
+            res.setErrorCode(BaseError.USER_TOKENNOTMATCH);
+            res.setErrorDesc(BaseError.USER_TOKENNOTMATCH_DESC);
+            return res;
+        }
+
+        String idKey = String.valueOf(useId);
+        String isLoginStr = "isLogin" + idKey;
+        SysInitData.ru.del(tokenStr);
+        SysInitData.ru.del(isLoginStr);
+        ResPojo res = new ResPojo();
+        res.setErrorCode(BaseError.RESPONSE_OK);
+        res.putData("msg", "退出登录成功");
+        logger.info("{}-用户退出登录成功", user.getName());
         return res;
     }
 }

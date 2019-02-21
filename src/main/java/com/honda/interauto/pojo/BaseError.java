@@ -38,7 +38,9 @@ public interface BaseError {
     String USER_TOKENLESS = "301";
     String USER_TOKENLESS_DESC = "token为空";
     String USER_TOKENOVERDUE = "302";
-    String USER_TOKENOVERDUE_DESC = "token过期或在其他地方登录，请重新登录";
+    String USER_TOKENOVERDUE_DESC = "无效的token信息，请重新登录";
+    String USER_TOKENNOTMATCH = "303";
+    String USER_TOKENNOTMATCH_DESC = "token与用户不匹配，请重新登录";
 
     //空值
     String NULL_VALUE = "null";
