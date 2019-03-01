@@ -2,8 +2,7 @@ package com.honda.interauto.tools.sysTool;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.honda.interauto.dto.ServerDto;
+import com.honda.interauto.entity.ServerEntity;
 import com.honda.interauto.services.ServerService;
 import com.honda.interauto.tools.dbTool.RedisUtil;
 import org.apache.logging.log4j.LogManager;
@@ -42,7 +41,7 @@ public class SysInitRunner implements ApplicationRunner {
 
         SysInitData.ru = ruT;
 
-        List<ServerDto> serverDtoList = serverService.getAllServers();
+        List<ServerEntity> serverDtoList = serverService.getAllServers();
         for(int i = 0; i < serverDtoList.size(); i++){
             String serverId = serverDtoList.get(i).getServerId();
             serverIdList.add(serverId);

@@ -1,7 +1,7 @@
 package com.honda.interauto.services;
 
 import com.honda.interauto.dao.auto.ServerDao;
-import com.honda.interauto.dto.ServerDto;
+import com.honda.interauto.entity.ServerEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ public class ServerService {
     @Autowired
     private ServerDao serverDao;
 
-    public List<ServerDto> getAllServers(){
+    public List<ServerEntity> getAllServers(){
         return serverDao.getAllServers();
     }
 }

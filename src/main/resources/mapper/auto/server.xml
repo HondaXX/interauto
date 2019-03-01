@@ -7,7 +7,7 @@
     <sql id="serverInfo">
 		id, serverId
 	</sql>
-    <select id="getAllServers" resultType="com.honda.interauto.dto.ServerDto">
+    <select id="getAllServers" resultType="com.honda.interauto.entity.ServerEntity">
         select <include refid="serverInfo"/> from t_server where status=0
     </select>
 </mapper>

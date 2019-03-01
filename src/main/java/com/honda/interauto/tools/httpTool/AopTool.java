@@ -1,28 +1,20 @@
 package com.honda.interauto.tools.httpTool;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.honda.interauto.dto.ServerDto;
-import com.honda.interauto.dto.UserDto;
+import com.honda.interauto.entity.UserEntity;
 import com.honda.interauto.pojo.BaseError;
 import com.honda.interauto.pojo.InnerResPojo;
 import com.honda.interauto.pojo.ReqPojo;
 import com.honda.interauto.pojo.ResPojo;
-import com.honda.interauto.services.ServerService;
-import com.honda.interauto.tools.dbTool.RedisUtil;
 import com.honda.interauto.tools.sysTool.SysInitData;
-import com.honda.interauto.tools.sysTool.SysInitRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -67,7 +59,7 @@ public class AopTool {
             return returnObj;
         }
 
-        UserDto userDto = (UserDto) SysInitData.ru.get(tokenStr);
+        UserEntity userDto = (UserEntity) SysInitData.ru.get(tokenStr);
         logger.info("========>{}-req url: {}", userDto.getName(), request.getServletPath());
         if (null == joinpoint.getArgs() || joinpoint.getArgs().length < 0){
             logger.debug("请求参数格式错误: " + request.getServletPath());

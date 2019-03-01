@@ -1,6 +1,6 @@
 package com.honda.interauto.controllers;
 
-import com.honda.interauto.dto.InterCaseDto;
+import com.honda.interauto.entity.InterCaseEntity;
 import com.honda.interauto.pojo.BaseError;
 import com.honda.interauto.pojo.ReqPojo;
 import com.honda.interauto.pojo.ResPojo;
@@ -21,14 +21,14 @@ public class SetApiCtrl {
     Logger logger = LogManager.getLogger(SetApiCtrl.class);
 
     @Autowired
-    private InterCaseDto interCaseDto;
+    private InterCaseEntity interCaseDto;
     @Autowired
     private InterCaseService interCaseService;
 
     @RequestMapping(value = "/NewApi.json", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResPojo newApi(@RequestBody ReqPojo reqInfo){
         ResPojo res = new ResPojo();
-        interCaseDto = (InterCaseDto) TypeChangeTool.mapToObject(reqInfo.getRequestBody(), InterCaseDto.class);
+        interCaseDto = (InterCaseEntity) TypeChangeTool.mapToObject(reqInfo.getRequestBody(), InterCaseEntity.class);
         if (interCaseDto.equals(null)){
             res.setErrorCode(BaseError.SYS_ERROR);
             res.setErrorDesc(BaseError.SYS_ERROR_DESC);
@@ -52,7 +52,7 @@ public class SetApiCtrl {
     @RequestMapping(value = "/UpdataApi.json", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResPojo updataApi(@RequestBody ReqPojo reqInfo){
         ResPojo res = new ResPojo();
-        interCaseDto = (InterCaseDto) TypeChangeTool.mapToObject(reqInfo.getRequestBody(), InterCaseDto.class);
+        interCaseDto = (InterCaseEntity) TypeChangeTool.mapToObject(reqInfo.getRequestBody(), InterCaseEntity.class);
         if (interCaseDto.equals(null)){
             res.setErrorCode(BaseError.SYS_ERROR);
             res.setErrorDesc(BaseError.SYS_ERROR_DESC);
@@ -102,7 +102,7 @@ public class SetApiCtrl {
         Integer proId = Integer.parseInt(reqInfo.getRequestBody().get("proId").toString());
         Integer modelId = Integer.parseInt(reqInfo.getRequestBody().get("modelId").toString());
 
-        List<InterCaseDto> interCaseList = interCaseService.getAllInterCases(proId, modelId);
+        List<InterCaseEntity> interCaseList = interCaseService.getAllInterCases(proId, modelId);
         if (interCaseList == null && interCaseList.size() == 0){
             res.setErrorCode(BaseError.DB_ERROR);
             res.setErrorDesc(BaseError.DB_ERROR_DESC);
@@ -117,7 +117,7 @@ public class SetApiCtrl {
     @PostMapping(value = "/GetApiByAim.json", produces = "application/json;charset=UTF-8")
     public ResPojo getApiByAim(@RequestBody ReqPojo reqInfo){
         ResPojo res = new ResPojo();
-        List<InterCaseDto> interCaseList = interCaseService.getInterCaseByCaseAim(reqInfo.getRequestBody().get("caseAim").toString());
+        List<InterCaseEntity> interCaseList = interCaseService.getInterCaseByCaseAim(reqInfo.getRequestBody().get("caseAim").toString());
         if (interCaseList == null && interCaseList.size() == 0){
             res.setErrorCode(BaseError.DB_ERROR);
             res.setErrorDesc(BaseError.DB_ERROR_DESC);
@@ -141,7 +141,7 @@ public class SetApiCtrl {
             return res;
         }
 
-        Map<Integer, List<InterCaseDto>> proModelMap = interCaseService.getInterCaseByModel(proId, modelIdList);
+        Map<Integer, List<InterCaseEntity>> proModelMap = interCaseService.getInterCaseByModel(proId, modelIdList);
         logger.debug(proModelMap.toString());
         res.setResCode(BaseError.RESPONSE_OK);
         res.putData("interList", proModelMap);

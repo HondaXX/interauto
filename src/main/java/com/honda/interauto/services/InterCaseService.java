@@ -1,7 +1,7 @@
 package com.honda.interauto.services;
 
 import com.honda.interauto.dao.auto.InterCaseDao;
-import com.honda.interauto.dto.InterCaseDto;
+import com.honda.interauto.entity.InterCaseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +15,11 @@ public class InterCaseService {
     @Autowired
     private InterCaseDao interCaseDao;
 
-    public Integer newInterCase(InterCaseDto interCaseDto){
+    public Integer newInterCase(InterCaseEntity interCaseDto){
         return interCaseDao.newInterCase(interCaseDto);
     }
 
-    public Integer updataInterCase(InterCaseDto interCaseDto){
+    public Integer updataInterCase(InterCaseEntity interCaseDto){
         return interCaseDao.updataInterCase(interCaseDto);
     }
 
@@ -27,28 +27,28 @@ public class InterCaseService {
         return interCaseDao.deleteInterCase(caseId);
     }
 
-    public InterCaseDto getInterCaseByCaseId(Integer caseId){
+    public InterCaseEntity getInterCaseByCaseId(Integer caseId){
         return interCaseDao.getInterCaseByCaseId(caseId);
     }
 
-    public List<InterCaseDto> getAllInterCases(Integer proId, Integer modelId){
+    public List<InterCaseEntity> getAllInterCases(Integer proId, Integer modelId){
         return interCaseDao.getAllInterCases(proId, modelId);
     }
 
-    public List<InterCaseDto> getInterCaseByCaseAim(String caseAim){
+    public List<InterCaseEntity> getInterCaseByCaseAim(String caseAim){
         return interCaseDao.getInterCaseByCaseAim(caseAim);
     }
 
-    public Map<Integer, List<InterCaseDto>> getInterCaseByModel(Integer proId, List<Integer> modelIdList){
-        List<InterCaseDto> caseList = interCaseDao.getInterCaseByModel(proId, modelIdList);
+    public Map<Integer, List<InterCaseEntity>> getInterCaseByModel(Integer proId, List<Integer> modelIdList){
+        List<InterCaseEntity> caseList = interCaseDao.getInterCaseByModel(proId, modelIdList);
 
-        Map<Integer, List<InterCaseDto>> proModelMap = new HashMap<Integer, List<InterCaseDto>>();
+        Map<Integer, List<InterCaseEntity>> proModelMap = new HashMap<Integer, List<InterCaseEntity>>();
 
         for (Integer modelId : modelIdList){
-            Map<Integer, List<InterCaseDto>> proModelMapTemp = new HashMap<Integer, List<InterCaseDto>>();
-            List<InterCaseDto> modelListSub = new ArrayList<InterCaseDto>();
+            Map<Integer, List<InterCaseEntity>> proModelMapTemp = new HashMap<Integer, List<InterCaseEntity>>();
+            List<InterCaseEntity> modelListSub = new ArrayList<InterCaseEntity>();
             for (int i = 0; i < caseList.size(); i++){
-                InterCaseDto interCaseDto = caseList.get(i);
+                InterCaseEntity interCaseDto = caseList.get(i);
                 if (interCaseDto.getModelId() == modelId){
                     modelListSub.add(interCaseDto);
                 }

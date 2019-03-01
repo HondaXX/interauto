@@ -1,7 +1,7 @@
 package com.honda.interauto.tools.httpTool;
 
 import com.alibaba.fastjson.JSON;
-import com.honda.interauto.dto.InterCaseDto;
+import com.honda.interauto.entity.InterCaseEntity;
 import com.honda.interauto.tools.sysTool.TypeChangeTool;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -48,7 +48,7 @@ public class HttpReqTool {
         }
     }
 
-    public static String httpReqJson(InterCaseDto interCaseDto, String cookie){
+    public static String httpReqJson(InterCaseEntity interCaseDto, Map<String, String> cookieMap){
         Integer caseID = interCaseDto.getCaseId();
         Map<String, Object> reqMap = (Map) JSON.parse(interCaseDto.getRequestJson());
         String reqUrl = interCaseDto.getDNS() + interCaseDto.getInterUrl();
@@ -58,8 +58,10 @@ public class HttpReqTool {
             try {
                 URIBuilder uri = new URIBuilder(reqUrl);
                 HttpGet hg = new HttpGet(uri.build());
-                if (null != cookie){
-                    hg.setHeader("Cookie", cookie);
+                if (null != cookieMap && cookieMap.size() > 0){
+                    for (String keyStr : cookieMap.keySet()){
+                        hg.setHeader(keyStr, cookieMap.get(keyStr));
+                    }
                 }
                 logger.info("call request url: " + reqUrl + "\n" + "call request response: ");
                 CloseableHttpResponse response = client.execute(hg);
@@ -73,8 +75,10 @@ public class HttpReqTool {
             CloseableHttpClient client = HttpClients.createDefault();
             try{
                 HttpPost hp = new HttpPost(reqUrl);
-                if (null != cookie){
-                    hp.setHeader("Cookie", cookie);
+                if (null != cookieMap && cookieMap.size() > 0){
+                    for (String keyStr : cookieMap.keySet()){
+                        hp.setHeader(keyStr, cookieMap.get(keyStr));
+                    }
                 }
                 StringEntity entity = setEntity(interCaseDto.getRequestJson());
                 hp.setEntity(entity);
@@ -95,14 +99,18 @@ public class HttpReqTool {
     }
 
     //文件请求
-    public static String httpReqFile(File file, InterCaseDto interCaseDto){
+    public static String httpReqFile(File file, InterCaseEntity interCaseDto, Map<String, String> cookieMap){
         logger.info("========>start case with id: " + interCaseDto.getCaseId());
         String reqUrl = interCaseDto.getDNS() + interCaseDto.getInterUrl();
-
         CloseableHttpClient client = HttpClients.createDefault();
 
         try{
             HttpPost hp = new HttpPost(reqUrl);
+            if (null != cookieMap && cookieMap.size() > 0){
+                for (String keyStr : cookieMap.keySet()){
+                    hp.setHeader(keyStr, cookieMap.get(keyStr));
+                }
+            }
             logger.info("upload file url: " + reqUrl + "\n" + "upload file response: ");
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
@@ -119,7 +127,7 @@ public class HttpReqTool {
     }
 
     //表单请求
-    public static String httpReqForm(InterCaseDto interCaseDto){
+    public static String httpReqForm(InterCaseEntity interCaseDto, Map<String, String> cookieMap){
         logger.info("========>start case with id: " + interCaseDto.getCaseId());
         Map<String, Object> reqMap = TypeChangeTool.strToMap(interCaseDto.getRequestJson());
         String reqUrl = interCaseDto.getDNS() + interCaseDto.getInterUrl();
@@ -127,6 +135,11 @@ public class HttpReqTool {
         CloseableHttpClient client = HttpClients.createDefault();
         try{
             HttpPost hp = new HttpPost(reqUrl);
+            if (null != cookieMap && cookieMap.size() > 0){
+                for (String keyStr : cookieMap.keySet()){
+                    hp.setHeader(keyStr, cookieMap.get(keyStr));
+                }
+            }
             logger.info("call request url: " + reqUrl + "\n" + "call request param: " + reqMap.toString() + "\n" + "call request response: ");
             List<NameValuePair> form = getReqParamList(reqMap);
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Charset.forName("UTF-8"));
@@ -140,7 +153,7 @@ public class HttpReqTool {
         }
     }
 
-    public static Map<String, String> getCookies(InterCaseDto interCaseDto){
+    public static Map<String, String> getCookies(InterCaseEntity interCaseDto){
         logger.info("========>start case with id: " + interCaseDto.getCaseId());
         Map<String, Object> reqMap = TypeChangeTool.strToMap(interCaseDto.getRequestJson());
         String reqUrl = interCaseDto.getDNS() + interCaseDto.getInterUrl();

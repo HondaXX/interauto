@@ -1,7 +1,7 @@
 package com.honda.interauto.controllers;
 
 import com.alibaba.fastjson.JSONObject;
-import com.honda.interauto.dto.UserDto;
+import com.honda.interauto.entity.UserEntity;
 import com.honda.interauto.pojo.BaseError;
 import com.honda.interauto.pojo.ReqPojo;
 import com.honda.interauto.pojo.ResPojo;
@@ -28,7 +28,7 @@ public class UserCtrl {
     @Autowired
     private UserServices userServices;
     @Autowired
-    private UserDto userDto;
+    private UserEntity userDto;
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -94,7 +94,7 @@ public class UserCtrl {
         }
 
         Integer useId = Integer.parseInt(reqInfo.getRequestBody().get("id").toString());
-        UserDto user = (UserDto) SysInitData.ru.get(tokenStr);
+        UserEntity user = (UserEntity) SysInitData.ru.get(tokenStr);
         if (!(user.getId() == useId)){
             logger.info("========>操作用户与token信息不匹配:{}" + tokenStr);
             ResPojo res = new ResPojo();

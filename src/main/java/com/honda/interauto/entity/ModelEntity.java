@@ -1,9 +1,9 @@
-package com.honda.interauto.dto;
+package com.honda.interauto.entity;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class ModelDto {
+public class ModelEntity {
     private Integer proId;
     private Integer modelId;
     private String des;

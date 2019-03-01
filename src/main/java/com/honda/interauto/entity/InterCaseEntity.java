@@ -1,11 +1,9 @@
-package com.honda.interauto.dto;
+package com.honda.interauto.entity;
 
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-
 @Component
-public class InterCaseDto {
+public class InterCaseEntity {
     private Integer caseId;
     private Integer proId;
     private Integer modelId;

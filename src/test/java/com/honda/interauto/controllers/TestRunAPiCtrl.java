@@ -77,7 +77,7 @@ public class TestRunAPiCtrl {
 
         String reqUrl = "http://localhost:8000/interauto/ApiManage/RunApi.json";
         Map<String, String> headerMap = new HashMap<String, String>();
-        headerMap.put("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxIn0.qfd0G-elhE1aGr15LrnYlIZ_3UToaOM5HeMcXrmDGBM1550829361866");
+        headerMap.put("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxIn0.qfd0G-elhE1aGr15LrnYlIZ_3UToaOM5HeMcXrmDGBM1551320032633");
         String result = HttpUtils.httpReqPost(reqUrl, req, headerMap);
         System.out.println("========>result: " + result);
         Map<String, Object> resMap = (Map<String, Object>) JSON.parse(result);

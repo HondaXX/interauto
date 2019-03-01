@@ -1,9 +1,9 @@
-package com.honda.interauto.dto;
+package com.honda.interauto.entity;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class ServerDto {
+public class ServerEntity {
     private Integer id;
     private String serverId;
 

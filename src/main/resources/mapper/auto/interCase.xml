@@ -9,13 +9,13 @@
       expectRes,resParam,needRoll,rollCode,usedParam,createTime,updataTime
 	</sql>
 
-    <insert id="newInterCase" parameterType="com.honda.interauto.dto.InterCaseDto" keyProperty="id" useGeneratedKeys="true">
+    <insert id="newInterCase" parameterType="com.honda.interauto.entity.InterCaseEntity" keyProperty="id" useGeneratedKeys="true">
       insert into t_interCase (<include refid="interCaseInfo"/>) values(#{caseId},#{proID},#{modelId},#{DNS},#{caseAim},#{interUrl},#{requestMethod},#{needDesignReq},
         #{requestJson},#{reqParam},#{needInit},#{initCode},#{needDesignRes},#{expectRes},#{resParam},#{needRoll},#{rollCode},#{usedParam},
         (#{createTime}, '%Y-%m-%d %H:%i:%S'), #{updataTime}, '%Y-%m-%d %H:%i:%S')
     </insert>
 
-    <update id="updataInterCase" parameterType="com.honda.interauto.dto.InterCaseDto">
+    <update id="updataInterCase" parameterType="com.honda.interauto.entity.InterCaseEntity">
         update t_interCase
         <set>
             <if test="proId != null">proId = #{proId},</if>
@@ -49,25 +49,25 @@
         where caseId = #{caseId}
     </update>
 
-    <select id="getInterCaseByCaseId" parameterType="int" resultType="com.honda.interauto.dto.InterCaseDto">
+    <select id="getInterCaseByCaseId" parameterType="int" resultType="com.honda.interauto.entity.InterCaseEntity">
         select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1'
         and <if test="caseId != null">t.caseId = #{caseId}</if>
     </select>
 
-    <select id="getAllInterCases" resultType="com.honda.interauto.dto.InterCaseDto">
+    <select id="getAllInterCases" resultType="com.honda.interauto.entity.InterCaseEntity">
         select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1'
         and <if test="proId != null">t.proId = #{proId}</if>
         and <if test="modelId != null">t.modelId = #{modelId}</if>
         order by t.caseId asc
     </select>
 
-    <select id="getInterCaseByCaseAim" resultType="com.honda.interauto.dto.InterCaseDto">
+    <select id="getInterCaseByCaseAim" resultType="com.honda.interauto.entity.InterCaseEntity">
         select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1'
         and <if test="caseAim != null">t.caseAim like CONCAT('%', #{caseAim, jdbcType=CHAR}, '%')</if>
         order by t.caseId asc
     </select>
 
-    <select id="getInterCaseByModel" resultType="com.honda.interauto.dto.InterCaseDto">
+    <select id="getInterCaseByModel" resultType="com.honda.interauto.entity.InterCaseEntity">
         select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1'
         and <if test="proId != null">t.proId = #{proId}</if>
         and <if test="modelList != null">t.modelId in

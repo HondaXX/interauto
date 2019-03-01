@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.honda.interauto.dao.auto.ProDao">
-    <resultMap id="baseProMap" type="com.honda.interauto.dto.ProDto">
+    <resultMap id="baseProMap" type="com.honda.interauto.entity.ProEntity">
         <id column="id" property="proId"/>
         <result column="des" property="des"/>
     </resultMap>

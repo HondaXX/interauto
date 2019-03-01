@@ -1,12 +1,9 @@
 package com.honda.interauto.controllers;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
 import com.honda.interauto.InterautoApplication;
-import com.honda.interauto.InterautoApplicationTests;
-import com.honda.interauto.dto.InterCaseDto;
+import com.honda.interauto.entity.InterCaseEntity;
 import com.honda.interauto.pojo.ReqPojo;
-import com.honda.interauto.pojo.ResPojo;
 import com.honda.interauto.services.InterCaseService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,30 +11,19 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-
-import javax.annotation.Resource;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -69,7 +55,7 @@ public class TestSetApiCtrl {
     @Before
     public void setUp(){
         logger.info("starting test...");
-        mockMvc = MockMvcBuilders.standaloneSetup(new SetApiCtrl(), new InterCaseDto(), new InterCaseService()).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new SetApiCtrl(), new InterCaseEntity(), new InterCaseService()).build();
 
         delReqMap.put("serverId", "DelApi");
         delReqBody.put("caseId", 1);

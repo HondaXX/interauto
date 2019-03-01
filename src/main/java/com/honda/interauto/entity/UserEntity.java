@@ -1,11 +1,11 @@
-package com.honda.interauto.dto;
+package com.honda.interauto.entity;
 
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
 @Component
-public class UserDto implements Serializable {
+public class UserEntity implements Serializable {
     private Integer id;
     private String name;
     private String password;
