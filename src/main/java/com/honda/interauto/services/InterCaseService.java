@@ -15,12 +15,12 @@ public class InterCaseService {
     @Autowired
     private InterCaseDao interCaseDao;
 
-    public Integer newInterCase(InterCaseEntity interCaseDto){
-        return interCaseDao.newInterCase(interCaseDto);
+    public Integer newInterCase(InterCaseEntity interCaseEntity){
+        return interCaseDao.newInterCase(interCaseEntity);
     }
 
-    public Integer updataInterCase(InterCaseEntity interCaseDto){
-        return interCaseDao.updataInterCase(interCaseDto);
+    public Integer updataInterCase(InterCaseEntity interCaseEntity){
+        return interCaseDao.updataInterCase(interCaseEntity);
     }
 
     public Integer deleteInterCase(Integer caseId){

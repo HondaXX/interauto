@@ -8,6 +8,8 @@ public class ProModelDto {
     private String proName;
     private Integer modelId;
     private String modelName;
+    private Integer caseID;
+    private String caseAim;
 
     public Integer getProId() {
         return proId;
@@ -39,5 +41,21 @@ public class ProModelDto {
 
     public void setModelName(String modelName) {
         this.modelName = modelName;
+    }
+
+    public Integer getCaseID() {
+        return caseID;
+    }
+
+    public void setCaseID(Integer caseID) {
+        this.caseID = caseID;
+    }
+
+    public String getCaseAim() {
+        return caseAim;
+    }
+
+    public void setCaseAim(String caseAim) {
+        this.caseAim = caseAim;
     }
 }

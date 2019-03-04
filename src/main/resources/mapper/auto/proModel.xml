@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.honda.interauto.dao.auto.ProModelDao">
+    <resultMap id="baseProModelMap" type="com.honda.interauto.dto.ProModelDto">
+        <id property="proId" column="id" jdbcType="BIGINT"/>
+        <id property="proName" column="proName" jdbcType="VARCHAR"/>
+        <id property="modelId" column="id" jdbcType="BIGINT"/>
+        <id property="modelName" column="modelName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getAllProModels" resultMap="baseProModelMap">
+        SELECT p.id as proId, p.proName, m.id as modelId, m.modelName from t_pro p LEFT JOIN t_model m on p.id = m.proId where 1 = 1 and
+        <if test="proId != null">t.proId = #{proId}</if>
+    </select>
+
+    <select id="getProModels" resultMap="baseProModelMap">
+        SELECT mp.proId, mp.proName, mp.modelId, mp.modelName, i.caseId, i.caseAim from
+        (SELECT p.id as proId, p.proName, m.id as modelId, m.modelName from t_pro p LEFT JOIN t_model m on p.id = m.proId where 1 = 1
+        and <if test="proId != null">p.id = #{proId}</if>
+        and <if test="modelId != null">m.id = #{modelId}</if>
+        ) as mp
+        LEFT JOIN t_interCase i on mp.modelId = i.modelId where i.caseStatus = '1'
+        and <if test="caseList != null">i.caseId in
+                <foreach item="caseList" index="index" collection="caseList" open="(" separator="," close=")">
+                    #{caseList}
+                </foreach>
+            </if>
+        order by i.caseId asc
+    </select>
+</mapper>

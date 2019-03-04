@@ -5,22 +5,23 @@
 
 <mapper namespace="com.honda.interauto.dao.auto.InterCaseDao">
     <sql id="interCaseInfo">
-      caseId,proId,modelId,DNS,caseAim,interUrl,requestMethod,needDesignReq,requestJson,reqParam,needInit,initCode,needDesignRes,
-      expectRes,resParam,needRoll,rollCode,usedParam,createTime,updataTime
+      caseId,proId,modelId,DNS,needCookie,caseAim,interUrl,requestMethod,needDesignReq,requestJson,reqParam,needInit,initCode,needDesignRes,
+      expectRes,resParam,needRoll,rollCode,saveParam,usedParam,createTime,updataTime
 	</sql>
 
     <insert id="newInterCase" parameterType="com.honda.interauto.entity.InterCaseEntity" keyProperty="id" useGeneratedKeys="true">
-      insert into t_interCase (<include refid="interCaseInfo"/>) values(#{caseId},#{proID},#{modelId},#{DNS},#{caseAim},#{interUrl},#{requestMethod},#{needDesignReq},
-        #{requestJson},#{reqParam},#{needInit},#{initCode},#{needDesignRes},#{expectRes},#{resParam},#{needRoll},#{rollCode},#{usedParam},
+      insert into t_interCase (<include refid="interCaseInfo"/>) values(#{caseId},#{proId},#{modelId},#{DNS},#{needCookie},#{caseAim},#{interUrl},#{requestMethod},#{needDesignReq},
+        #{requestJson},#{reqParam},#{needInit},#{initCode},#{needDesignRes},#{expectRes},#{resParam},#{needRoll},#{rollCode},#{saveParam},#{usedParam},
         (#{createTime}, '%Y-%m-%d %H:%i:%S'), #{updataTime}, '%Y-%m-%d %H:%i:%S')
     </insert>
 
     <update id="updataInterCase" parameterType="com.honda.interauto.entity.InterCaseEntity">
         update t_interCase
         <set>
-            <if test="proId != null">proId = #{proId},</if>
             <if test="modelId != null">modelId = #{modelId},</if>
             <if test="DNS != null">DNS = #{DNS},</if>
+            <if test="proId != null">proId = #{proId}</if>
+            <if test="needCookie != null">needCookie = #{needCookie}</if>
             <if test="caseAim != null">caseAim = #{caseAim},</if>
             <if test="interUrl != null">interUrl = #{interUrl},</if>
             <if test="requestMethod != null">requestMethod = #{requestMethod},</if>
@@ -34,6 +35,7 @@
             <if test="resParam != null">resParam = #{resParam},</if>
             <if test="needRoll != null">needRoll = #{needRoll},</if>
             <if test="rollCode != null">rollCode = #{rollCode},</if>
+            <if test="saveParam != null">saveParam = #{saveParam},</if>
             <if test="usedParam != null">usedParam = #{usedParam},</if>
             <if test="updataTime != null">updataTime = DATE_FORMAT(#{updataTime}, '%Y-%m-%d %H:%i:%S')</if>
             <!--oracle用to_date(#{updataTime}, 'YYYY-MM-DD HH24:MI:SS')-->
@@ -71,8 +73,7 @@
         select <include refid="interCaseInfo"/> from t_interCase t where t.caseStatus = '1'
         and <if test="proId != null">t.proId = #{proId}</if>
         and <if test="modelList != null">t.modelId in
-                <foreach item="modelList" index="index" collection="modelList"
-                         open="(" separator="," close=")">
+                <foreach item="modelList" index="index" collection="modelList" open="(" separator="," close=")">
                     #{modelList}
                 </foreach>
             </if>

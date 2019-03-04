@@ -8,9 +8,9 @@ import java.util.List;
 
 @Repository
 public interface InterCaseDao {
-    public Integer newInterCase(InterCaseEntity interCaseDto);
+    public Integer newInterCase(InterCaseEntity interCaseEntity);
 
-    public Integer updataInterCase(InterCaseEntity interCaseDto);
+    public Integer updataInterCase(InterCaseEntity interCaseEntity);
 
     public Integer deleteInterCase(@Param("caseId")Integer caseId);
 

@@ -9,6 +9,7 @@ public class InterCaseEntity {
     private Integer modelId;
 
     private String DNS;
+    private String needCookie;
     private String caseAim;
     private String interUrl;
     private String requestMethod;//0post,1get
@@ -22,6 +23,7 @@ public class InterCaseEntity {
     private String resParam;
     private String needRoll;//0no,1sql,2redis
     private String rollCode;
+    private String saveParam;
     private String usedParam;
     private String caseStatus;
     private String createTime;
@@ -31,16 +33,16 @@ public class InterCaseEntity {
         return caseId;
     }
 
+    public Integer getModelId() {
+        return modelId;
+    }
+
     public Integer getProId() {
         return proId;
     }
 
     public void setProId(Integer proId) {
         this.proId = proId;
-    }
-
-    public Integer getModelId() {
-        return modelId;
     }
 
     public void setModelId(Integer modelId) {
@@ -57,6 +59,14 @@ public class InterCaseEntity {
 
     public void setDNS(String DNS) {
         this.DNS = DNS;
+    }
+
+    public String getNeedCookie() {
+        return needCookie;
+    }
+
+    public void setNeedCookie(String needCookie) {
+        this.needCookie = needCookie;
     }
 
     public String getCaseAim() {
@@ -161,6 +171,14 @@ public class InterCaseEntity {
 
     public void setRollCode(String rollCode) {
         this.rollCode = rollCode;
+    }
+
+    public String getSaveParam() {
+        return saveParam;
+    }
+
+    public void setSaveParam(String saveParam) {
+        this.saveParam = saveParam;
     }
 
     public String getUsedParam() {
