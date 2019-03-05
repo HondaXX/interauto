@@ -3,11 +3,17 @@ package com.honda.interauto.controllers;
 import com.alibaba.fastjson.JSON;
 import com.honda.interauto.dao.auto.GetParamValue;
 import com.honda.interauto.dto.ProModelDto;
+import com.honda.interauto.entity.CaseResDetailEntity;
+import com.honda.interauto.entity.CaseResOverViewEntity;
 import com.honda.interauto.entity.InterCaseEntity;
+import com.honda.interauto.entity.UserEntity;
 import com.honda.interauto.pojo.*;
+import com.honda.interauto.services.CaseResDetailService;
+import com.honda.interauto.services.CaseResOverViewService;
 import com.honda.interauto.services.InterCaseService;
 import com.honda.interauto.services.ProModelService;
 import com.honda.interauto.tools.httpTool.HttpReqTool;
+import com.honda.interauto.tools.httpTool.RequestTool;
 import com.honda.interauto.tools.sysTool.OtherTool;
 import com.honda.interauto.tools.sysTool.ParamTool;
 import com.honda.interauto.tools.sysTool.SysInitData;
@@ -18,10 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/ApiManage")
@@ -40,6 +45,10 @@ public class RunApiCtrl {
     private InterCaseService interCaseService;
     @Autowired
     private ProModelService proModelService;
+    @Autowired
+    private CaseResDetailService caseResDetailService;
+    @Autowired
+    private CaseResOverViewService caseResOverViewService;
 
 //    @Autowired
 //    @Qualifier("autoJdbcTemplate")
@@ -52,6 +61,9 @@ public class RunApiCtrl {
     public ResPojo runApi(@RequestBody ReqPojo reqInfo){
         ResPojo res = new ResPojo();
         Map<Integer, String> caseResMap = new HashMap<Integer, String>();
+        int totalCount = 0;
+        int failCount = 0;
+        int successCount = 0;
 
         Integer proId = Integer.parseInt(reqInfo.getRequestBody().get("proId").toString());
         Map<String, List<Integer>> modelCaseMap = (Map<String, List<Integer>>) reqInfo.getRequestBody().get("modelCaseList");
@@ -62,10 +74,18 @@ public class RunApiCtrl {
             return res;
         }
 
+        //跑用例的动作id
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String startTime = simpleDateFormat.format(date);
+        String runTagId = runApiTagId(date);
+
         for(String modelIdStr : modelCaseMap.keySet()){
             Integer modelId = Integer.parseInt(modelIdStr);
             List<Integer> caseList = modelCaseMap.get(modelIdStr);
             List<ProModelDto> proModelList = proModelService.getProModels(proId, modelId, caseList);
+            //获取的有效用例加到总数
+            totalCount += proModelList.size();
             for (ProModelDto proModelDto : proModelList){
                 Integer caseId = proModelDto.getCaseID();
                 logger.info("========>【{}】模块, 用例【{}】开始, id: {}", proModelDto.getModelName(), proModelDto.getCaseAim(), caseId);
@@ -74,9 +94,13 @@ public class RunApiCtrl {
                     //用例初始化执行
                     logger.info("========>开始初始化用例数据");
                     Map<String, Object> dbSCodeMap = (Map) JSON.parse(interCaseEntity.getInitCode());
-                    if (!ParamTool.operateDB(dbSCodeMap, gpv, sqlVo)){
+                    String operateDBStr = ParamTool.operateDB(dbSCodeMap, gpv, sqlVo);
+                    if (!operateDBStr.equals("success")){
                         logger.info("========>初始化用例数据失败");
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(runTagId, caseId, "1", BaseError.CASE_DB_OPER, BaseError.CASE_DB_OPER_DESC, "初始化错误sql:" + operateDBStr);
+                        caseResDetailService.saveCaseRes(caseResDetailEntity);
                         caseResMap.put(caseId, BaseError.CASE_DB_OPER_DESC);
+                        failCount += 1;
                         continue;
                     }
                     logger.info("========>初始化用例数据成功");
@@ -90,20 +114,29 @@ public class RunApiCtrl {
                     Object paramWithValueMap = ParamTool.getValueForParam(paramSqlMap, gpv, sqlVo);
                     if (paramWithValueMap instanceof String){
                         logger.info("========>请求获取字段值失败");
+                        String[] paramAndSql = OtherTool.splitStr(paramWithValueMap.toString(), "@");
+                        String paramStr = paramAndSql[0];
+                        String sqlStr = paramAndSql[1];
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(runTagId, caseId, "1", BaseError.CASE_PARAM_GETV, BaseError.CASE_PARAM_GETV_DESC, "请求参数化取值错误key:" + paramStr + ",sql:" + sqlStr);
+                        caseResDetailService.saveCaseRes(caseResDetailEntity);
                         caseResMap.put(caseId, BaseError.CASE_PARAM_GETV_DESC + ": {" + paramWithValueMap + "}");
                         if (rollBackDB(interCaseEntity).equals(false)){
                             logger.info("========>用例还原失败：{}", caseId);
                         }
+                        failCount += 1;
                         continue;
                     }
                     //获取值替换原有请求值
                     Object trueReqMap = ParamTool.replaceSettingParam((Map<String, Object>) paramWithValueMap, originReqMap);
                     if (trueReqMap instanceof String){
                         logger.info("========>请求替换参数化值失败");
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(runTagId, caseId, "1", BaseError.CASE_PARAM_REP, BaseError.CASE_PARAM_REP_DESC, "请求时参数化替换错误key:" + trueReqMap);
+                        caseResDetailService.saveCaseRes(caseResDetailEntity);
                         caseResMap.put(caseId, BaseError.CASE_PARAM_REP_DESC + ": {" + trueReqMap + "}");
                         if (rollBackDB(interCaseEntity).equals(false)){
                             logger.info("========>用例还原失败：{}", caseId);
                         }
+                        failCount += 1;
                         continue;
                     }
                     logger.info("========>请求参数化成功");
@@ -116,7 +149,7 @@ public class RunApiCtrl {
                     resInfo = HttpReqTool.httpReqJson(interCaseEntity, null);
                 }else {
                     Map<String, String> cookieMap = new HashMap<>();
-                    String params = interCaseEntity.getUsedParam();
+                    String params = interCaseEntity.getNeedCookie();
                     if (!StringUtils.isBlank(params)){
                         String[] paramList = OtherTool.splitStr(params, ",");
                         for (int i = 0; i < paramList.length; i++){
@@ -130,10 +163,13 @@ public class RunApiCtrl {
                 }
                 if (null == resInfo){
                     logger.info("========>接口请求响应出错");
+                    CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(runTagId, caseId, "1", BaseError.CASE_RES_ERROR, BaseError.CASE_RES_ERROR_DESC, "接口调用失败，响应为空");
+                    caseResDetailService.saveCaseRes(caseResDetailEntity);
                     caseResMap.put(caseId, BaseError.CASE_RES_ERROR_DESC);
                     if (rollBackDB(interCaseEntity).equals(false)){
                         logger.info("========>用例还原失败：{}", caseId);
                     }
+                    failCount += 1;
                     continue;
                 }
 
@@ -149,20 +185,29 @@ public class RunApiCtrl {
                     Object paramWithValueMap = ParamTool.getValueForParam(paramSqlMap, gpv, sqlVo);
                     if (paramWithValueMap instanceof String){
                         logger.info("========>结果获取字段值失败");
+                        String[] paramAndSql = OtherTool.splitStr(paramWithValueMap.toString(), "@");
+                        String paramStr = paramAndSql[0];
+                        String sqlStr = paramAndSql[1];
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(runTagId, caseId, "1", BaseError.CASE_PARAM_GETV, BaseError.CASE_PARAM_GETV_DESC, "返回参数化取值错误key:" + paramStr + ",sql:" + sqlStr);
+                        caseResDetailService.saveCaseRes(caseResDetailEntity);
                         caseResMap.put(caseId, BaseError.CASE_PARAM_GETV_DESC + ": {" + paramWithValueMap + "}");
                         if (rollBackDB(interCaseEntity).equals(false)){
                             logger.info("========>用例还原失败：{}", caseId);
                         }
+                        failCount += 1;
                         continue;
                     }
                     //获取值替换原有预期值
                     Object trueExpectO = ParamTool.replaceSettingParam((Map<String, Object>) paramWithValueMap, originResMap);
                     if (trueExpectO instanceof String){
                         logger.info("========>结果替换参数化值失败");
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(runTagId, caseId, "1", BaseError.CASE_PARAM_REP, BaseError.CASE_PARAM_REP_DESC, "响应参数化替换错误key:" + trueExpectO);
+                        caseResDetailService.saveCaseRes(caseResDetailEntity);
                         caseResMap.put(caseId, BaseError.CASE_PARAM_REP_DESC + ": {" + trueExpectO + "}");
                         if (rollBackDB(interCaseEntity).equals(false)){
                             logger.info("========>用例还原失败：{}", caseId);
                         }
+                        failCount += 1;
                         continue;
                     }
                     trueExpectMap = (Map<String, Object>) JSON.parse(trueExpectO.toString());
@@ -174,12 +219,24 @@ public class RunApiCtrl {
                 //开始做对比
                 Map<String, String> compareRes = ParamTool.compareRes(resMap, trueExpectMap);
                 if (compareRes.get("comRes").equals("0")){
-//                logger.info("========>这里从map里取不通过的值存库");
-                    String failStr = compareRes.get("unequalParam");
-                    caseResMap.put(caseId, BaseError.CASE_CONP_UNEQ_DESC + ": {" + failStr + "}");
+                    //如果是值不匹配
+                    if (compareRes.containsKey("unequalParam")){
+                        String failStr = compareRes.get("unequalParam");
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(runTagId, caseId, "1", BaseError.CASE_COMP_UNEQ, BaseError.CASE_COMP_UNEQ_DESC, "响应与预期比对不相等:" + failStr);
+                        caseResDetailService.saveCaseRes(caseResDetailEntity);
+                        caseResMap.put(caseId, BaseError.CASE_COMP_UNEQ_DESC + failStr);
+                    }
+                    //如果是键不存在
+                    if (caseResMap.containsKey("lessParam")){
+                        String failStr = compareRes.get("lessParam");
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(runTagId, caseId, "1", BaseError.CASE_COMP_LESSKEY, BaseError.CASE_CONP_LESSKEY_DESC, "响应存在预期不存在的值:" + failStr);
+                        caseResDetailService.saveCaseRes(caseResDetailEntity);
+                        caseResMap.put(caseId, BaseError.CASE_CONP_LESSKEY_DESC + failStr);
+                    }
                     if (rollBackDB(interCaseEntity).equals(false)){
                         logger.info("========>用例还原失败：{}", caseId);
                     }
+                    failCount += 1;
                     continue;
                 }
 
@@ -196,17 +253,23 @@ public class RunApiCtrl {
 
                 //对比成功开始还原数据库
                 if (rollBackDB(interCaseEntity).equals(false)){
-                    logger.info("========>用例还原失败：{}", caseId);
+                    logger.info("========>用例执行完还原失败：{}", caseId);
+                    CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(runTagId, caseId, "1", BaseError.CASE_DB_OPER, BaseError.CASE_DB_OPER_DESC, "用例成功执行，但还原数据库错误，请查日志:【用例执行完还原失败】");
+                    caseResDetailService.saveCaseRes(caseResDetailEntity);
                     caseResMap.put(caseId, BaseError.CASE_DB_OPER_DESC);
+                    successCount += 1;
                     continue;
                 }
-
+                successCount += 1;
                 caseResMap.put(caseId, BaseError.CASE_OK);
-
             }
         }
 
-
+        //用例执行完插一个总记录
+        String userName = OtherTool.splitStr(runTagId, "-")[0];
+        String endTime = simpleDateFormat.format(new Date());
+        CaseResOverViewEntity caseResOverViewEntity = new CaseResOverViewEntity(runTagId, totalCount, failCount, successCount, userName, startTime, endTime);
+        caseResOverViewService.recordOverView(caseResOverViewEntity);
         res.setResCode(BaseError.RESPONSE_OK);
         res.putData("resDetail", caseResMap);
         return res;
@@ -219,7 +282,8 @@ public class RunApiCtrl {
             //用例初始化执行
             logger.info("========>开始还原用例数据");
             Map<String, Object> dbSCodeMap = (Map) JSON.parse(interCaseDto.getRollCode());
-            if (!ParamTool.operateDB(dbSCodeMap, gpv, sqlVo)){
+            String operateDBStr = ParamTool.operateDB(dbSCodeMap, gpv, sqlVo);
+            if (!operateDBStr.equals("success")){
                 rollRes = false;
                 return rollRes;
             }
@@ -229,6 +293,17 @@ public class RunApiCtrl {
             logger.info("========>该用例不需要还原");
             return rollRes;
         }
+    }
+
+    //跑用例时独立id方法
+    public String runApiTagId(Date date){
+        HttpServletRequest request = RequestTool.getCurrentRequest();
+        String tokenStr = request.getHeader("token");
+        UserEntity userEntity = (UserEntity) SysInitData.ru.get(tokenStr);
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+        String timeStr = format.format(date);
+        String tagIdStr = userEntity.getName() + "-" + timeStr;
+        return tagIdStr;
     }
 
 }

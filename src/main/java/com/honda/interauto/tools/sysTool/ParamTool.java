@@ -21,8 +21,8 @@ public class ParamTool {
                 sqlVo.setSqlStr(sql);
                 Object value = gpv.getParamValue(sqlVo);
                 if (StringUtils.isBlank(value.toString())) {
-                    logger.info("========>get value from db error, param:{}, sql:{}", paramStr, sql);
-                    return paramStr;
+                    logger.info("========>get value from db fail, param:{}, sql:{}", paramStr, sql);
+                    return paramStr + "@" + sql;
                 }
                 vfpMap.put(paramStr, value);
             }
@@ -62,9 +62,9 @@ public class ParamTool {
         return originMap;
     }
 
-    public static boolean operateDB(Map<String, Object> dbCodeMap, GetParamValue gpv, SqlVo sqlVo) {
+    public static String operateDB(Map<String, Object> dbCodeMap, GetParamValue gpv, SqlVo sqlVo) {
         if (null == dbCodeMap) {
-            return false;
+            return "badCode";
         }else {
             for(String dbUser : dbCodeMap.keySet()) {
                 List<String> sqlList = (List<String>) dbCodeMap.get(dbUser);
@@ -75,12 +75,12 @@ public class ParamTool {
                     } catch (Exception e) {
                         logger.info("====>update error which sql: {}", sqlStr);
                         e.printStackTrace();
-                        return false;
+                        return sqlStr;
                     }
                 }
             }
+            return "success";
         }
-        return true;
     }
 
     public static Map<String, String> compareRes(Map<String, Object> trueResMap, Map<String, Object> trueRxpectMap) {
@@ -96,7 +96,7 @@ public class ParamTool {
                     if (!trueValue.equals(expectValue)) {
                         logger.info("========>外层结果比对不通过: {}--[result: {}, except: {}]", trueKey, trueValue, expectValue);
                         compareResMap.put("comRes", "0");
-                        compareResMap.put("unequalParam", trueKey);
+                        compareResMap.put("unequalParam", trueKey + ": except-[" + expectValue + "],real-[" + trueValue + "]");
                         return compareResMap;
                     }
                 }else{
@@ -109,13 +109,13 @@ public class ParamTool {
                             if (!childTrueValue.equals(childExpectValue)) {
                                 logger.info("========>内层结果比对不通过: {}--[result: {}, except: {}]", childTrueKey, childTrueValue, childExpectValue);
                                 compareResMap.put("comRes", "0");
-                                compareResMap.put("unequalParam", childTrueKey);
+                                compareResMap.put("unequalParam", childTrueKey + ": except-[" + childExpectValue + "],real-[" + childTrueValue + "]");
                                 return compareResMap;
                             }
                         }else {
                             logger.info("========>不存在的内层对比值: " + childTrueKey);
                             compareResMap.put("comRes", "0");
-                            compareResMap.put("unequalParam", childTrueKey);
+                            compareResMap.put("lessParam", childTrueKey);
                             return compareResMap;
                         }
                     }
@@ -123,7 +123,7 @@ public class ParamTool {
             }else {
                 logger.info("========>不存在的内层对比值: " + trueKey);
                 compareResMap.put("comRes", "0");
-                compareResMap.put("unequalParam", trueKey);
+                compareResMap.put("lessParam", trueKey);
                 return compareResMap;
             }
         }

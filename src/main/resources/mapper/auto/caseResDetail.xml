@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.honda.interauto.dao.auto.CaseResDetailDao">
+    <resultMap id="baseCaseResDetail" type="com.honda.interauto.entity.CaseResDetailEntity">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <id property="tagId" column="tagId" jdbcType="VARCHAR"/>
+        <id property="caseId" column="caseId" jdbcType="BIGINT"/>
+        <id property="caseRes" column="caseRes" jdbcType="VARCHAR"/>
+        <id property="caseResCode" column="caseResCode" jdbcType="VARCHAR"/>
+        <id property="caseDes" column="caseDes" jdbcType="VARCHAR"/>
+        <id property="caseResDetail" column="caseResDetail" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="caseRes">
+		tagId, caseId, caseRes, caseResCode, caseDes, caseResDetail
+	</sql>
+
+    <insert id="baseCaseResDetail" parameterType="com.honda.interauto.entity.CaseResDetailEntity" keyProperty="id" useGeneratedKeys="true">
+        insert into t_caseRes_detail (<include refid="caseRes"/>) values(#{tagId}, #{caseId}, #{caseRes}, #{caseResCode}, #{caseDes}, #{caseResDetail})
+    </insert>
+</mapper>

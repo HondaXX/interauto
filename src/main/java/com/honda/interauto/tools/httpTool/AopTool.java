@@ -59,8 +59,8 @@ public class AopTool {
             return returnObj;
         }
 
-        UserEntity userDto = (UserEntity) SysInitData.ru.get(tokenStr);
-        logger.info("========>{}-req url: {}", userDto.getName(), request.getServletPath());
+        UserEntity userEntity = (UserEntity) SysInitData.ru.get(tokenStr);
+        logger.info("========>{}-req url: {}", userEntity.getName(), request.getServletPath());
         if (null == joinpoint.getArgs() || joinpoint.getArgs().length < 0){
             logger.debug("请求参数格式错误: " + request.getServletPath());
             ResPojo res = new ResPojo();
