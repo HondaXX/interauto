@@ -60,7 +60,7 @@ public class AopTool {
         }
 
         UserEntity userEntity = (UserEntity) SysInitData.ru.get(tokenStr);
-        logger.info("========>{}-req url: {}", userEntity.getName(), request.getServletPath());
+        logger.info("{}-调用接口：{}", userEntity.getName(), request.getServletPath());
         if (null == joinpoint.getArgs() || joinpoint.getArgs().length < 0){
             logger.debug("请求参数格式错误: " + request.getServletPath());
             ResPojo res = new ResPojo();
@@ -73,6 +73,7 @@ public class AopTool {
         for (Object arg : joinpoint.getArgs()) {
             if (arg instanceof ReqPojo) {
                 rp = (ReqPojo) arg;
+                logger.info("请求参数：{}", JSONObject.toJSONString(rp));
                 break;
             }
         }

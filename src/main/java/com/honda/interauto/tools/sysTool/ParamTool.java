@@ -113,7 +113,7 @@ public class ParamTool {
                                 return compareResMap;
                             }
                         }else {
-                            logger.info("========>不存在的内层对比值: " + childTrueKey);
+                            logger.info("========>预期不存在的内层对比值: " + childTrueKey);
                             compareResMap.put("comRes", "0");
                             compareResMap.put("lessParam", childTrueKey);
                             return compareResMap;
@@ -121,7 +121,42 @@ public class ParamTool {
                     }
                 }
             }else {
-                logger.info("========>不存在的内层对比值: " + trueKey);
+                logger.info("========>预期不存在的外层对比值: " + trueKey);
+                compareResMap.put("comRes", "0");
+                compareResMap.put("lessParam", trueKey);
+                return compareResMap;
+            }
+        }
+        compareResMap.put("comRes", "1");
+        return compareResMap;
+    }
+
+    public static Map<String, String> compareResKey(Map<String, Object> trueResMap, Map<String, Object> expectMap){
+        //对比结果存放，0失败 1成功
+        Map<String, String> compareResMap = new HashMap<String, String>();
+        for(String trueKey : trueResMap.keySet()){
+            if (expectMap.containsKey(trueKey)) {
+                Object trueValue = trueResMap.get(trueKey);
+                Object expectValue = expectMap.get(trueKey);
+                //如果返回有多层，继续往下走，最多处理两层
+                if (!(trueValue instanceof LinkedTreeMap && expectValue instanceof LinkedTreeMap)) {
+                    continue;
+                }else{
+                    Map<String, Object> trueValueMap = (Map<String, Object>) trueValue;
+                    Map<String, Object> expectValueMap = (Map<String, Object>) expectValue;
+                    for(String childTrueKey : trueValueMap.keySet()) {
+                        if (expectValueMap.containsKey(childTrueKey)) {
+                            continue;
+                        }else {
+                            logger.info("========>预期不存在的内层key值: " + childTrueKey);
+                            compareResMap.put("comRes", "0");
+                            compareResMap.put("lessParam", childTrueKey);
+                            return compareResMap;
+                        }
+                    }
+                }
+            }else {
+                logger.info("========>预期不存在的外层key值: " + trueKey);
                 compareResMap.put("comRes", "0");
                 compareResMap.put("lessParam", trueKey);
                 return compareResMap;

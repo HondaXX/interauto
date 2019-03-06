@@ -166,6 +166,14 @@
 			<version>3.3.0</version>
 		</dependency>
 
+		<!--lombok-->
+		<dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.10</version>
+        </dependency>
+
+		<!--testng-->
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>

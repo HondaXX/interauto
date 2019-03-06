@@ -5,13 +5,13 @@
 
 <mapper namespace="com.honda.interauto.dao.auto.InterCaseDao">
     <sql id="interCaseInfo">
-      caseId,proId,modelId,DNS,needCookie,caseAim,interUrl,requestMethod,needDesignReq,requestJson,reqParam,needInit,initCode,needDesignRes,
+      caseId,proId,modelId,DNS,needCookie,caseAim,interUrl,requestMethod,needDesignReq,requestJson,reqParam,needInit,initCode,compareType,needDesignRes,
       expectRes,resParam,needRoll,rollCode,saveParam,usedParam,createTime,updataTime
 	</sql>
 
     <insert id="newInterCase" parameterType="com.honda.interauto.entity.InterCaseEntity" keyProperty="id" useGeneratedKeys="true">
       insert into t_interCase (<include refid="interCaseInfo"/>) values(#{caseId},#{proId},#{modelId},#{DNS},#{needCookie},#{caseAim},#{interUrl},#{requestMethod},#{needDesignReq},
-        #{requestJson},#{reqParam},#{needInit},#{initCode},#{needDesignRes},#{expectRes},#{resParam},#{needRoll},#{rollCode},#{saveParam},#{usedParam},
+        #{requestJson},#{reqParam},#{needInit},#{initCode},#{compareType},#{needDesignRes},#{expectRes},#{resParam},#{needRoll},#{rollCode},#{saveParam},#{usedParam},
         (#{createTime}, '%Y-%m-%d %H:%i:%S'), #{updataTime}, '%Y-%m-%d %H:%i:%S')
     </insert>
 
@@ -30,6 +30,7 @@
             <if test="reqParam != null">reqParam = #{reqParam},</if>
             <if test="needInit != null">needInit = #{needInit},</if>
             <if test="initCode != null">initCode = #{initCode},</if>
+            <if test="compareType != null">compareType = #{compareType}</if>
             <if test="needDesignRes != null">needDesignRes = #{needDesignRes},</if>
             <if test="expectRes != null">expectRes = #{expectRes},</if>
             <if test="resParam != null">resParam = #{resParam},</if>

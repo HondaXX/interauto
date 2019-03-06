@@ -10,15 +10,27 @@
         <id property="caseId" column="caseId" jdbcType="BIGINT"/>
         <id property="caseRes" column="caseRes" jdbcType="VARCHAR"/>
         <id property="caseResCode" column="caseResCode" jdbcType="VARCHAR"/>
-        <id property="caseDes" column="caseDes" jdbcType="VARCHAR"/>
+        <id property="caseDes" column="caseResDes" jdbcType="VARCHAR"/>
         <id property="caseResDetail" column="caseResDetail" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="caseRes">
-		tagId, caseId, caseRes, caseResCode, caseDes, caseResDetail
+		tagId, caseId, caseRes, caseResCode, caseResDes, caseResDetail
 	</sql>
 
-    <insert id="baseCaseResDetail" parameterType="com.honda.interauto.entity.CaseResDetailEntity" keyProperty="id" useGeneratedKeys="true">
+    <insert id="saveCaseRes" parameterType="com.honda.interauto.entity.CaseResDetailEntity" keyProperty="id" useGeneratedKeys="true">
         insert into t_caseRes_detail (<include refid="caseRes"/>) values(#{tagId}, #{caseId}, #{caseRes}, #{caseResCode}, #{caseDes}, #{caseResDetail})
     </insert>
+
+    <select id="getTagResDetail" parameterType="java.lang.String" resultMap="baseCaseResDetail">
+        select id, <include refid="caseRes"/> from t_caseRes_detail t where 1 = 1
+        and <if test="pageNum != null">t.id &gt; (#{pageNum} - 1) * #{pageSize} and t.id &lt;= (#{pageNum} * #{pageSize})</if>
+        and <if test="runTagId != null">t.tagId = #{runTagId}</if>
+        order by t.id desc
+    </select>
+
+    <select id="getTagResCount" parameterType="java.lang.String" resultType="int">
+        select count(*) from t_caseRes_detail where 1 = 1
+        and <if test="runTagId != null">tagId = #{runTagId}</if>
+    </select>
 </mapper>

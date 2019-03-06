@@ -18,6 +18,7 @@ public class InterCaseEntity {
     private String reqParam;
     private String needInit;//0no,1sql,2redis
     private String initCode;
+    private String compareType;  //0全等,1key等
     private String needDesignRes;
     private String expectRes;
     private String resParam;
@@ -131,6 +132,14 @@ public class InterCaseEntity {
 
     public void setInitCode(String initCode) {
         this.initCode = initCode;
+    }
+
+    public String getCompareType() {
+        return compareType;
+    }
+
+    public void setCompareType(String compareType) {
+        this.compareType = compareType;
     }
 
     public String getNeedDesignRes() {
