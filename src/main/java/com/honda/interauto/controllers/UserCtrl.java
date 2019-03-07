@@ -14,14 +14,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-@RestController
+@Controller
 @RequestMapping(value = "/UserManage")
-@Service
 public class UserCtrl {
     private final Logger logger = LogManager.getLogger(UserCtrl.class);
 
@@ -32,7 +34,29 @@ public class UserCtrl {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @GetMapping(value = "/index")
+    public String backIndex(Model model){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateStr = format.format(new Date());
+        String hmsStr = OtherTool.splitStr(dateStr, " ")[1];
+        Integer hourInt = Integer.parseInt(OtherTool.splitStr(hmsStr, ":")[0]);
+        String timeStr = null;
+        if (hourInt > 0 && hourInt <= 7){
+            timeStr = "凌晨";
+        }else if (hourInt > 7 && hourInt <= 12){
+            timeStr = "上午";
+        }else if (hourInt > 12 && hourInt <= 18){
+            timeStr = "下午";
+        }else {
+            timeStr = "晚上";
+        }
+        model.addAttribute("timeStr", timeStr);
+        model.addAttribute("time", dateStr);
+        return "login";
+    }
+
     @PostMapping(value = "/login.json", produces = "application/json;charset=UTF-8")
+    @ResponseBody
     public ResPojo login(@RequestBody ReqPojo reqInfo){
         ResPojo res = new ResPojo();
 
@@ -74,6 +98,7 @@ public class UserCtrl {
     }
 
     @PostMapping(value = "/loginOut.json", produces = "application/json;charset=UTF-8")
+    @ResponseBody
     public ResPojo loginOut(@RequestBody ReqPojo reqInfo){
         HttpServletRequest request = RequestTool.getCurrentRequest();
         String tokenStr = request.getHeader("token");

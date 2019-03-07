@@ -40,8 +40,6 @@ public class RunApiCtrl {
     private SqlVo sqlVo;
 
     @Autowired
-    private BaseConfigs baseConfigs;
-    @Autowired
     private InterCaseService interCaseService;
     @Autowired
     private ProModelService proModelService;
@@ -161,7 +159,7 @@ public class RunApiCtrl {
 //                            cookieMap.put(OtherTool.splitStr(param, "@")[0], oValue.toString());
 //                        }
 //                    }
-                    cookieMap.put("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxIn0.qfd0G-elhE1aGr15LrnYlIZ_3UToaOM5HeMcXrmDGBM1551864653842");
+                    cookieMap.put("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxIn0.qfd0G-elhE1aGr15LrnYlIZ_3UToaOM5HeMcXrmDGBM1551922887998");
                     resInfo = HttpReqTool.httpReqJson(interCaseEntity, cookieMap);
                 }
                 if (null == resInfo){
@@ -296,7 +294,7 @@ public class RunApiCtrl {
                     continue;
                 }
                 logger.info("========>用例结果详情存库，caseId-->{}", caseId);
-                CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "1", BaseError.CASE_OK, "success", "用例通过");
+                CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "0", BaseError.CASE_OK, "success", "用例通过");
                 caseResDetailService.saveCaseRes(caseResDetailEntity);
                 successCount += 1;
                 caseResMap.put(caseId, BaseError.CASE_OK);

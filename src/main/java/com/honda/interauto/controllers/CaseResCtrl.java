@@ -50,8 +50,9 @@ public class CaseResCtrl {
         Integer pageNum = Integer.parseInt(reqPojo.getRequestBody().get("pageNum").toString());
         Integer pageSize = Integer.parseInt(reqPojo.getRequestBody().get("pageSize").toString());
         String runTagId = reqPojo.getRequestBody().get("tagId").toString();
+        String status = reqPojo.getRequestBody().get("status").toString();
 
-        List<CaseResDetailEntity> caseDetailList = caseResDetailService.getTagResDetail(runTagId, pageNum, pageSize);
+        List<CaseResDetailEntity> caseDetailList = caseResDetailService.getTagResDetail(runTagId, pageNum, pageSize, status);
         int detailCount = caseResDetailService.getTagResCount(runTagId);
         ResPojo res = new ResPojo();
         res.setResCode(BaseError.RESPONSE_OK);

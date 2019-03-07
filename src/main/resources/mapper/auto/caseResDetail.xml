@@ -24,9 +24,11 @@
 
     <select id="getTagResDetail" parameterType="java.lang.String" resultMap="baseCaseResDetail">
         select id, <include refid="caseRes"/> from t_caseRes_detail t where 1 = 1
-        and <if test="pageNum != null">t.id &gt; (#{pageNum} - 1) * #{pageSize} and t.id &lt;= (#{pageNum} * #{pageSize})</if>
-        and <if test="runTagId != null">t.tagId = #{runTagId}</if>
+        <!--and <if test="pageNum != null">t.id &gt; (#{pageNum} - 1) * #{pageSize} and t.id &lt;= (#{pageNum} * #{pageSize})</if>-->
+        <if test="runTagId != null">and t.tagId = #{runTagId}</if>
+        <if test="status != null and '' != status">and t.caseRes = #{status}</if>
         order by t.id desc
+        limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
     </select>
 
     <select id="getTagResCount" parameterType="java.lang.String" resultType="int">

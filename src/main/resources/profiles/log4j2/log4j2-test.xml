@@ -75,6 +75,7 @@
         <logger name="com.zaxxer" level="OFF"/>
         <logger name="org.apache.commons.beanutils" level="OFF"/>
         <logger name="org.apache.http.impl" level="OFF"/>
+        <logger name="org.thymeleaf.TemplateEngine" level="OFF"/>
 
         <root level="DEBUG">
             <appender-ref ref="Console"/>

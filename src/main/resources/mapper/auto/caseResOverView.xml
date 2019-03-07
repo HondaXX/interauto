@@ -26,15 +26,16 @@
 
     <select id="getAllOverView" parameterType="int" resultMap="baseCaseResOverView">
         select id, <include refid="caseResOverView"/> from t_caseRes_overView t where 1 = 1
-        and <if test="pageNum != null">t.id &gt; (#{pageNum} - 1) * #{pageSize} and t.id &lt;= (#{pageNum} * #{pageSize})</if>
-        order by t.startTime desc;
+        order by t.startTime desc
+        limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
     </select>
 
     <select id="getOperatorOverView" parameterType="int" resultMap="baseCaseResOverView">
         select id, <include refid="caseResOverView"/> from t_caseRes_overView t where 1 = 1
-        and <if test="pageNum != null">t.id &gt; (#{pageNum} - 1) * #{pageSize} and t.id &lt;= (#{pageNum} * #{pageSize})</if>
+        <!--and <if test="pageNum != null">t.id &gt; (#{pageNum} - 1) * #{pageSize} and t.id &lt;= (#{pageNum} * #{pageSize})</if>-->
         and <if test="operator != null">t.operator = #{operator}</if>
-        order by t.startTime desc;
+        order by t.startTime desc
+        limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
     </select>
 
     <select id="getCountRes" resultType="int">

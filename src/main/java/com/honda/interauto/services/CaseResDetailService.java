@@ -16,8 +16,8 @@ public class CaseResDetailService {
         return caseResDetailDao.saveCaseRes(caseResDetailEntity);
     }
 
-    public List<CaseResDetailEntity> getTagResDetail(String runTagId, Integer pageNum, Integer pageSize){
-        return caseResDetailDao.getTagResDetail(runTagId, pageNum, pageSize);
+    public List<CaseResDetailEntity> getTagResDetail(String runTagId, Integer pageNum, Integer pageSize, String status){
+        return caseResDetailDao.getTagResDetail(runTagId, pageNum, pageSize, status);
     }
 
     public Integer getTagResCount(String runTagId){
