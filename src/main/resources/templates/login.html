@@ -9,39 +9,28 @@
 <body>
     <h3 align="left" th:text="'现在时间:' + ${time}"></h3>
     <p align="center" th:text="${timeStr} + '好!请登录测试平台'"></p>
-    <form id="iform" th:action="@{/UserManage/login.json}" th:method="post">
-        <table align="center" border="1">
-            <tr>
-                <th>用户名</th>
-                <th>密码</th>
-                <th>服务id</th>
-                <th>Action</th>
-            </tr>
-            <tr>
-                <td><input type="text" name="name" value="" th:value="*{name}"/></td>
-                <td><input type="text" name="passwd" value="" th:value="*{passwd}"/></td>
-                <td><input type="text" name="serverId" value="" th:value="*{serverId}"/></td>
-                <td><input type="submit" value="登录"/></td>
-            </tr>
-        </table>
-    </form>
 
-    <input align="center" type="button" onclick="test()" value="test10">
+    <div align="center">
+        UserName:<input type="text" id="name" name="name"/><br>
+        PassWord:<input type="text" id="passwd" name="passwd"><br>
+        <input type="button" onclick="login()" value="登录">
+    </div>
 
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
-    <script type="text/javascript" src="https://www.bootcdn.cn/json2"></script>
+    <script type="text/javascript" src="https://www.bootcdn.cn/json2/"></script>
     <script type="text/javascript">
-        function test() {
+        function login() {
             //json对象
             var reqBody = {
                 "serverId":"UserLogin",
                 "requestBody":{
-                    "name":"admin",
-                    "passwd":"123456"
+                    "name":$("#name").val(),
+                    "passwd":$("#passwd").val()
                 }
             }
             //转换成string
-            var jsonToString = JSON.stringify(reqBody);
+            var reqToString = JSON.stringify(reqBody);
+            // alert(reqToString)
             //list用法
             var saveDataAry = [];
             var data1 = {
@@ -60,9 +49,17 @@
                 dataType : "json",
                 contentType : "application/json",
                 data : JSON.stringify(reqBody),
-                success : function(data) {
-                    console.log(JSON.stringify(data))
-                    // alert(JSON.stringify(data))
+                success : function(resData) {
+                    if (resData.resCode == "0"){
+                        alert(resData.token)
+                        beforeSend: function(xhr) {
+                            xhr.setRequestHeader("token", resData.token);
+                        }
+                        window.location.href = "../Result/main"
+                    }else {
+                        alert(resData.errorDesc)
+                        window.location.href = "index"
+                    }
                 }
             });
         }

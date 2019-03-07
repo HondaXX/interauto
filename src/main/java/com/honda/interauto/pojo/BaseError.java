@@ -46,7 +46,7 @@ public interface BaseError {
 
 
     //系统常量
-    String RESULT_CODE = "resultCode";
+    String RESULT_CODE = "resCode";
     String ERROR_CODE = "errorCode";
     String ERROR_DESC = "errorDesc";
 }
