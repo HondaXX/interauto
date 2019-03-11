@@ -12,17 +12,17 @@ spring:
   datasource:
     dbauto:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://192.168.31.228:3306/interauto?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
-#      jdbc-url: jdbc:mysql://10.83.16.13:3306/riskAuto?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
-      username: auto #auto  riskAuto
-      password: 688451a #688451a  Ws2018!07@
+#      jdbc-url: jdbc:mysql://192.168.31.228:3306/interauto?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
+      jdbc-url: jdbc:mysql://10.83.16.13:3306/riskAuto?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
+      username: riskAuto #auto  riskAuto
+      password: Ws2018!07@ #688451a  Ws2018!07@
 
     dbtest:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://192.168.31.228:3306/testtest?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
-#      jdbc-url: jdbc:mysql://10.83.16.13:3306/riskAuto?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
-      username: auto  #auto   riskAuto
-      password: 688451a #688451a   Ws2018!07@
+#      jdbc-url: jdbc:mysql://192.168.31.228:3306/testtest?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
+      jdbc-url: jdbc:mysql://10.83.16.13:3306/riskAuto?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT-8&useAffectedRows=true
+      username: riskAuto  #auto   riskAuto
+      password: Ws2018!07@ #688451a   Ws2018!07@
 
   thymeleaf:
       prefix: classpath:/templates/
@@ -42,6 +42,28 @@ baseconfigs:
   zipFilePath: D:\work\idea\temp\file\interauto\zipFile
 
 redis:
-  hostName: 127.0.0.1 #10.83.0.30  127.0.0.1
+  hostName: 10.83.0.30 #10.83.0.30  127.0.0.1
   port: 6379
-  password: #foobared
+  password: foobared
+
+mail:
+  stmp:
+    #接收邮件服务器：imap.qq.com  使用SSL，端口号993或143
+    #发送者邮箱impa的配置
+    imaphost: imap.qq.com
+    imapport: 143
+    imapAuthPw: aufcqtdefyebbccb
+    imapProtocol: imap
+
+    #发送邮件服务器：smtp.qq.com  使用SSL，端口号465或587
+    #发送者发送邮件smtp配置
+    smtphost: smtp.qq.com
+    smtpport: 465
+    smtpAuthPw: hethglbyorzjbehc
+    isauth: ture
+    timeout: 30000
+    account: 749298519@qq.com
+    subject: 自动化平台系统邮件
+    context: 发邮件的内容
+    #发送给，多个用","隔开
+    receivers: hongda.huang@weshareholdings.com

@@ -6,6 +6,8 @@ import com.honda.interauto.pojo.BaseError;
 import com.honda.interauto.pojo.ReqPojo;
 import com.honda.interauto.pojo.ResPojo;
 import com.honda.interauto.services.UserServices;
+import com.honda.interauto.tools.MailTool.MailConfig;
+import com.honda.interauto.tools.MailTool.MailTool;
 import com.honda.interauto.tools.httpTool.JwtAuthTool;
 import com.honda.interauto.tools.httpTool.RequestTool;
 import com.honda.interauto.tools.sysTool.OtherTool;
@@ -13,7 +15,6 @@ import com.honda.interauto.tools.sysTool.SysInitData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,9 @@ public class UserCtrl {
     @Autowired
     private UserEntity userDto;
     @Autowired
-    private RedisTemplate redisTemplate;
+    private MailTool mailTool;
+    @Autowired
+    private MailConfig mailConfig;
 
     @GetMapping(value = "/index")
     public String backIndex(Model model){
@@ -94,6 +97,9 @@ public class UserCtrl {
         res.putData("user", SysInitData.ru.get(token));
         logger.info("{}-用户登录成功", userName);
         logger.debug(JSONObject.toJSON(res));
+
+        mailTool.sendEmail(mailConfig.getAccount(), mailConfig.getReceivers(), mailConfig.getSubject(), mailConfig.getContext());
+
         return res;
     }
 

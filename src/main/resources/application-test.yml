@@ -43,3 +43,25 @@ redis:
   hostName: 10.83.0.30
   port: 6379
   password: foobared
+
+mail:
+  stmp:
+    #接收邮件服务器：imap.qq.com  使用SSL，端口号993或143
+    #发送者邮箱impa的配置
+    imaphost: imap.qq.com
+    imapport: 143
+    imapAuthPw: aufcqtdefyebbccb
+    imapProtocol: imap
+
+    #发送邮件服务器：smtp.qq.com  使用SSL，端口号465或587
+    #发送者发送邮件smtp配置
+    smtphost: smtp.qq.com
+    smtpport: 465
+    smtpAuthPw: hethglbyorzjbehc
+    isauth: ture
+    timeout: 30000
+    account: 749298519@qq.com
+    subject: 自动化平台系统邮件
+    context: 发邮件的内容
+    #发送给，多个用","隔开
+    receivers: hongda.huang@weshareholdings.com
