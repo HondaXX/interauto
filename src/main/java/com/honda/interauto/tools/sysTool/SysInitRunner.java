@@ -15,7 +15,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Order(value = 1)
@@ -30,7 +32,7 @@ public class SysInitRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception{
         logger.info("Start init system api...");
 
-        List<String> serverIdList = new ArrayList<String>();
+        Map<String, String> serverMap = new HashMap<String, String>();
 
         RedisUtil ruT = new RedisUtil();
         ruT.setRedisTemplate(redisTemplate);
@@ -44,13 +46,14 @@ public class SysInitRunner implements ApplicationRunner {
         List<ServerEntity> serverDtoList = serverService.getAllServers();
         for(int i = 0; i < serverDtoList.size(); i++){
             String serverId = serverDtoList.get(i).getServerId();
-            serverIdList.add(serverId);
+            String reqParams = serverDtoList.get(i).getReqParam();
+            serverMap.put(serverId, reqParams);
         }
-        SysInitData.serverList = serverIdList;
+        SysInitData.serverMap = serverMap;
 
-        String listJsonStr = JSONArray.parseArray(JSON.toJSONString(serverIdList)).toJSONString();
-        logger.info(listJsonStr);
-        ruT.set("apis", listJsonStr);
+        String mapJsonStr = JSON.toJSONString(serverMap);
+        logger.info(mapJsonStr);
+        ruT.set("apis", mapJsonStr);
         if (ruT.hasKey("apis")){
             logger.info("complate init api!!!");
             logger.info("初始化redis成功");

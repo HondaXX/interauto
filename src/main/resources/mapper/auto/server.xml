@@ -5,7 +5,7 @@
 
 <mapper namespace="com.honda.interauto.dao.auto.ServerDao">
     <sql id="serverInfo">
-		id, serverId
+		id, serverId, reqParam
 	</sql>
     <select id="getAllServers" resultType="com.honda.interauto.entity.ServerEntity">
         select <include refid="serverInfo"/> from t_server where status=0

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 public class ServerEntity {
     private Integer id;
     private String serverId;
+    private String reqParam;
 
     public Integer getId() {
         return id;
@@ -21,5 +22,13 @@ public class ServerEntity {
 
     public void setServerId(String serverId) {
         this.serverId = serverId;
+    }
+
+    public String getReqParam() {
+        return reqParam;
+    }
+
+    public void setReqParam(String reqParam) {
+        this.reqParam = reqParam;
     }
 }

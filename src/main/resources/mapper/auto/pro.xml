@@ -6,11 +6,12 @@
 <mapper namespace="com.honda.interauto.dao.auto.ProDao">
     <resultMap id="baseProMap" type="com.honda.interauto.entity.ProEntity">
         <id column="id" property="proId"/>
-        <result column="des" property="des"/>
+        <id column="proName" property="proName"/>
+        <id column="proDesc" property="des"/>
     </resultMap>
 
     <sql id="proInfo">
-		id, des
+		id, proName, proDesc
 	</sql>
 
     <select id="getAllPros" resultMap="baseProMap">

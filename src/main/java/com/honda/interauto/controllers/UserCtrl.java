@@ -32,10 +32,10 @@ public class UserCtrl {
     private UserServices userServices;
     @Autowired
     private UserEntity userDto;
-    @Autowired
-    private MailTool mailTool;
-    @Autowired
-    private MailConfig mailConfig;
+//    @Autowired
+//    private MailTool mailTool;
+//    @Autowired
+//    private MailConfig mailConfig;
 
     @GetMapping(value = "/index")
     public String backIndex(Model model){
@@ -65,7 +65,7 @@ public class UserCtrl {
 
         String userName = reqInfo.getRequestBody().get("name").toString();
         String password = reqInfo.getRequestBody().get("passwd").toString();
-        logger.debug("{}-用户开始登录，请求参数-{}", userName, reqInfo.toString());
+        logger.debug("{}-用户开始登录，请求参数-{}", userName, JSONObject.toJSON(reqInfo));
 
         userDto = userServices.identifyUserByNP(userName, password);
         if(userDto == null){
@@ -98,7 +98,7 @@ public class UserCtrl {
         logger.info("{}-用户登录成功", userName);
         logger.debug(JSONObject.toJSON(res));
 
-        mailTool.sendEmail(mailConfig.getAccount(), mailConfig.getReceivers(), mailConfig.getSubject(), mailConfig.getContext());
+//        mailTool.sendEmail(mailConfig.getAccount(), mailConfig.getReceivers(), mailConfig.getSubject(), mailConfig.getContext());
 
         return res;
     }

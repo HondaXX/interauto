@@ -6,7 +6,9 @@ import com.honda.interauto.pojo.BaseError;
 import com.honda.interauto.pojo.InnerResPojo;
 import com.honda.interauto.pojo.ReqPojo;
 import com.honda.interauto.pojo.ResPojo;
+import com.honda.interauto.tools.sysTool.OtherTool;
 import com.honda.interauto.tools.sysTool.SysInitData;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -15,7 +17,9 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Aspect
@@ -34,7 +38,11 @@ public class AopTool {
 //        String a = ru.get("apis").toString();
 //        List<String> serverIdList = JSONArray.parseArray(a, String.class);
 
-        List<String> serverIdList = SysInitData.serverList;
+        Map<String, String> serverParamMap = SysInitData.serverMap;
+        List<String> serverIdList = new ArrayList<String>();
+        for (String keyStr : serverParamMap.keySet()){
+            serverIdList.add(keyStr);
+        }
 
         ReqPojo rp = new ReqPojo();
         Object returnObj;
@@ -87,6 +95,18 @@ public class AopTool {
             return returnObj;
         }else {
             try{
+                String reqParam = serverParamMap.get(rp.getServerId());
+                String[] reqParams = OtherTool.splitStr(reqParam, ",");
+                for (String param : reqParams){
+                    if (StringUtils.isBlank(rp.getRequestBody().get(param).toString())){
+                        ResPojo rsp = new ResPojo();
+                        logger.info("字段值为空-->" + param);
+                        rsp.setErrorCode(BaseError.PARAM_NULL);
+                        rsp.setErrorDesc(BaseError.PARAM_NULL_DESC + ": " + param);
+                        returnObj = rsp;
+                        return returnObj;
+                    }
+                }
                 returnObj = joinpoint.proceed();
                 logger.debug(JSONObject.toJSON(returnObj));
                 return returnObj;

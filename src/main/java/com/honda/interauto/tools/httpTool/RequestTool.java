@@ -30,23 +30,23 @@ public class RequestTool {
         String serverStr = rp.getServerId();
 
         if (serverStr.equals(null) || serverStr.equals("")){
-            logger.info("param serverId is null");
+            logger.info("serverId字段为空");
             irp.setInnerCode(BaseError.NULL_ERROR);
             irp.setInnerDesc(BaseError.NULL_ERROR_DESC);
             return irp;
         }else if(rp.getRequestBody().equals(" ")){
-            logger.info("param requestBody is null");
+            logger.info("requestBody为空字符串");
             irp.setInnerCode(BaseError.NULL_ERROR);
             irp.setInnerDesc(BaseError.NULL_ERROR_DESC);
             return irp;
         }
         else if (!(rp.getRequestBody() instanceof Map)){
-            logger.info("param requestBody is not a Map fomat");
+            logger.info("requestBody不是一个map格式的数据");
             irp.setInnerCode((BaseError.FOMAT_ERROR));
             irp.setInnerDesc(BaseError.FOMAT_ERROR_DESC);
             return irp;
         }else if(!(serverList.contains(serverStr))){
-            logger.info("serverId not found");
+            logger.info("没找到匹配的serverId");
             irp.setInnerCode(BaseError.SERVERID_NOT_FOUND);
             irp.setInnerDesc(BaseError.SERVERID_NOT_FOUND_DESC);
             return irp;

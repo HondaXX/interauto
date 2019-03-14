@@ -16,6 +16,8 @@ public interface BaseError {
     String PARAM_ERROR_DESC = "param not found or null";
     String DB_ERROR = "105";
     String DB_ERROR_DESC = "db error";
+    String PARAM_NULL = "106";
+    String PARAM_NULL_DESC = "该传值的字段为空";
 
 
     String CASE_OK = "00";
