@@ -9,12 +9,13 @@
         <result property="name" column="name" jdbcType="VARCHAR"/>
         <result property="password" column="password" jdbcType="VARCHAR"/>
         <result property="age" column="age"/>
+        <result property="roleId" column="roleId" jdbcType="VARCHAR"/>
         <result property="createTime" column="createTime"/>
         <result property="updataTime" column="updataTime"/>
     </resultMap>
 
     <sql id="userInfo">
-		id, name, password, age, createTime, updateTime
+		id, name, password, age, roleId, createTime, updateTime
 	</sql>
 
     <select id="getAllUsers" resultType="com.honda.interauto.entity.UserEntity">

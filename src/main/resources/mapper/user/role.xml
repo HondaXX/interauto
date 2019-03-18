@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.honda.interauto.dao.user.RoleDao">
+    <resultMap id="roleMap" type="com.honda.interauto.entity.RoleEntity">
+        <result property="id" column="id" jdbcType="BIGINT"/>
+        <result property="fatherMenu" column="fatherMenu" jdbcType="VARCHAR"/>
+        <result property="cutMenu" column="cutMenu" jdbcType="VARCHAR"/>
+        <result property="roleName" column="roleName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="roleInfo">
+		id, fatherMenu, cutMenu, roleName
+	</sql>
+
+    <select id="getRoleById" parameterType="java.lang.Integer" resultMap="roleMap">
+        select <include refid="roleInfo"/> from t_role t where 1 = 1
+        <if test="id != null">and t.id = #{id}</if>
+    </select>
+
+</mapper>

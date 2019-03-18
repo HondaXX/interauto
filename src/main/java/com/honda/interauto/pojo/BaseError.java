@@ -18,6 +18,8 @@ public interface BaseError {
     String DB_ERROR_DESC = "db error";
     String PARAM_NULL = "106";
     String PARAM_NULL_DESC = "该传值的字段为空";
+    String PARAM_LESS = "107";
+    String PARAM_LESS_DESC = "接口传参不合法";
 
 
     String CASE_OK = "00";

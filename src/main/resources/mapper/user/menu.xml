@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.honda.interauto.dao.user.MenuDao">
+    <resultMap id="roleMap" type="com.honda.interauto.entity.MenuEntity">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <id property="fatherMenu" column="fatherMenu" jdbcType="VARCHAR"/>
+        <id property="menuName" column="menuName" jdbcType="VARCHAR"/>
+        <id property="menuDes" column="menuDes" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="menuInfo">
+		id, fatherMenu, menuName, menuDes
+	</sql>
+
+    <select id="getMenuById" resultMap="roleMap">
+        SELECT <include refid="menuInfo"/> from t_menu m where 1 = 1
+        <if test="fatherList != null">and m.id in
+            <foreach item="fatherList" index="index" collection="fatherList" open="(" separator="," close=")">
+                #{fatherList}
+            </foreach>
+        </if>
+        <if test="fatherList != null">or m.fatherMenu in
+            <foreach item="fatherList" index="index" collection="fatherList" open="(" separator="," close=")">
+                #{fatherList}
+            </foreach>
+        </if>
+        <if test="cutList != null">and m.id not in
+            <foreach item="cutList" index="index" collection="cutList" open="(" separator="," close=")">
+                #{cutList}
+            </foreach>
+        </if>
+        order by m.id asc
+    </select>
+
+</mapper>

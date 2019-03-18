@@ -96,6 +96,14 @@ public class AopTool {
                 if (!reqParam.equals("nullStr")){
                     String[] reqParams = OtherTool.splitStr(reqParam, ",");
                     for (String param : reqParams){
+                        if(!rp.getRequestBody().containsKey(param)){
+                            ResPojo rsp = new ResPojo();
+                            logger.info("请求没有含有必传值-->" + param);
+                            rsp.setErrorCode(BaseError.PARAM_LESS);
+                            rsp.setErrorDesc(BaseError.PARAM_LESS_DESC);
+                            returnObj = rsp;
+                            return returnObj;
+                        }
                         if (StringUtils.isBlank(rp.getRequestBody().get(param).toString())){
                             ResPojo rsp = new ResPojo();
                             logger.info("字段值为空-->" + param);

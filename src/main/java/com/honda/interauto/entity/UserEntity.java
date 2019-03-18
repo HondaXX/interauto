@@ -10,6 +10,7 @@ public class UserEntity implements Serializable {
     private String name;
     private String password;
     private Integer age;
+    private String roleId;
     private String createTime;
     private String updataTime;
 
@@ -43,6 +44,14 @@ public class UserEntity implements Serializable {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public String getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
     }
 
     public String getCreateTime() {
