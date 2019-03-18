@@ -9,16 +9,7 @@ import java.util.Map;
 
 public class SysInitData {
     public static Map<String, String > serverMap = new HashMap<String, String>();
-    public static List<String> serverList = null;
+    public static List<String> serverList = new ArrayList<String>();
 
     public static RedisUtil ru = new RedisUtil();
-
-
-
-    public static List<String> getServerList(){
-        for (String keyStr : serverMap.keySet()){
-            serverList.add(keyStr);
-        }
-        return serverList;
-    }
 }

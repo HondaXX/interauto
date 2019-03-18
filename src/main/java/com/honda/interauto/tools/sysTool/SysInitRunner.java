@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.honda.interauto.entity.ServerEntity;
 import com.honda.interauto.services.ServerService;
 import com.honda.interauto.tools.dbTool.RedisUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,8 @@ public class SysInitRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception{
         logger.info("Start init system api...");
 
-        Map<String, String> serverMap = new HashMap<String, String>();
+        Map<String, String> serverIdMap = new HashMap<String, String>();
+        List<String> serverIdList = new ArrayList<String>();
 
         RedisUtil ruT = new RedisUtil();
         ruT.setRedisTemplate(redisTemplate);
@@ -47,12 +49,17 @@ public class SysInitRunner implements ApplicationRunner {
         for(int i = 0; i < serverDtoList.size(); i++){
             String serverId = serverDtoList.get(i).getServerId();
             String reqParams = serverDtoList.get(i).getReqParam();
-            serverMap.put(serverId, reqParams);
+            if (StringUtils.isBlank(reqParams)){
+                reqParams = "nullStr";
+            }
+            serverIdList.add(serverId);
+            serverIdMap.put(serverId, reqParams);
         }
-        SysInitData.serverMap = serverMap;
+        SysInitData.serverMap = serverIdMap;
+        SysInitData.serverList = serverIdList;
 
-        String mapJsonStr = JSON.toJSONString(serverMap);
-        logger.info(mapJsonStr);
+        String mapJsonStr = JSON.toJSONString(serverIdMap);
+        logger.info(serverIdList);
         ruT.set("apis", mapJsonStr);
         if (ruT.hasKey("apis")){
             logger.info("complate init api!!!");

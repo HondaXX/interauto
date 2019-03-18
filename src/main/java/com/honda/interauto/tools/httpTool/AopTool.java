@@ -39,10 +39,7 @@ public class AopTool {
 //        List<String> serverIdList = JSONArray.parseArray(a, String.class);
 
         Map<String, String> serverParamMap = SysInitData.serverMap;
-        List<String> serverIdList = new ArrayList<String>();
-        for (String keyStr : serverParamMap.keySet()){
-            serverIdList.add(keyStr);
-        }
+        List<String> serverIdList = SysInitData.serverList;
 
         ReqPojo rp = new ReqPojo();
         Object returnObj;
@@ -96,15 +93,17 @@ public class AopTool {
         }else {
             try{
                 String reqParam = serverParamMap.get(rp.getServerId());
-                String[] reqParams = OtherTool.splitStr(reqParam, ",");
-                for (String param : reqParams){
-                    if (StringUtils.isBlank(rp.getRequestBody().get(param).toString())){
-                        ResPojo rsp = new ResPojo();
-                        logger.info("字段值为空-->" + param);
-                        rsp.setErrorCode(BaseError.PARAM_NULL);
-                        rsp.setErrorDesc(BaseError.PARAM_NULL_DESC + ": " + param);
-                        returnObj = rsp;
-                        return returnObj;
+                if (!reqParam.equals("nullStr")){
+                    String[] reqParams = OtherTool.splitStr(reqParam, ",");
+                    for (String param : reqParams){
+                        if (StringUtils.isBlank(rp.getRequestBody().get(param).toString())){
+                            ResPojo rsp = new ResPojo();
+                            logger.info("字段值为空-->" + param);
+                            rsp.setErrorCode(BaseError.PARAM_NULL);
+                            rsp.setErrorDesc(BaseError.PARAM_NULL_DESC + ": " + param);
+                            returnObj = rsp;
+                            return returnObj;
+                        }
                     }
                 }
                 returnObj = joinpoint.proceed();
