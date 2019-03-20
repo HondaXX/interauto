@@ -115,7 +115,7 @@ public class AopTool {
                     }
                 }
                 returnObj = joinpoint.proceed();
-                logger.debug(JSONObject.toJSON(returnObj));
+                logger.debug("返回结果：{}", JSONObject.toJSON(returnObj));
                 return returnObj;
             }catch (Throwable e){
                 e.printStackTrace();

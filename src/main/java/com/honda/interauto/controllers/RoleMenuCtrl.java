@@ -1,5 +1,6 @@
 package com.honda.interauto.controllers;
 
+import com.alibaba.fastjson.JSONObject;
 import com.honda.interauto.dao.user.MenuDao;
 import com.honda.interauto.entity.MenuEntity;
 import com.honda.interauto.entity.RoleEntity;
@@ -10,6 +11,8 @@ import com.honda.interauto.services.MenuService;
 import com.honda.interauto.services.RoleService;
 import com.honda.interauto.tools.sysTool.OtherTool;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +25,8 @@ import java.util.*;
 @RestController
 @RequestMapping(value = "/RoleMenu")
 public class RoleMenuCtrl {
+    private final Logger logger = LogManager.getLogger(RoleMenuCtrl.class);
+
     @Autowired
     private RoleService roleService;
     @Autowired
@@ -53,19 +58,22 @@ public class RoleMenuCtrl {
             String firstLV = new String();
             List<Map<String, String>> secondLV = new ArrayList<Map<String, String>>();
             if (StringUtils.isBlank(menuEntity.getFatherMenu())){
-                firstLV = menuEntity.getId().toString() + menuEntity.getMenuName();
+                firstLV = menuEntity.getId().toString() + "-" + menuEntity.getMenuName();
                 secondLV = new ArrayList<Map<String, String>>();
-                Map<String, String> secondLVMap = new HashMap<String, String>();
                 for (MenuEntity menuEntityChild : menuList){
-                    if (menuEntityChild.getFatherMenu().equals(menuEntity.getId())){
+                    String isSecondLV = menuEntityChild.getFatherMenu();
+                    Map<String, String> secondLVMap = new HashMap<String, String>();
+                    if (StringUtils.isBlank(isSecondLV)){
+                        continue;
+                    }
+                    if (isSecondLV.equals(menuEntity.getId().toString())){
                         secondLVMap.put(menuEntityChild.getId().toString(), menuEntityChild.getMenuName());
+                        secondLV.add(secondLVMap);
                     }
                 }
-                secondLV.add(secondLVMap);
+                roleMenuMap.put(firstLV, secondLV);
             }
-            roleMenuMap.put(firstLV, secondLV);
         }
-
 
         ResPojo res = new ResPojo();
         res.setResCode(BaseError.RESPONSE_OK);
