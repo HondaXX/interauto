@@ -7,17 +7,17 @@ public interface BaseError {
     String SYS_ERROR = "100";
     String SYS_ERROR_DESC = "system error";
     String NULL_ERROR = "101";
-    String NULL_ERROR_DESC = "serverId is null";
+    String NULL_ERROR_DESC = "serverId为空";
     String FOMAT_ERROR = "102";
     String FOMAT_ERROR_DESC = "请求参数格式错误";
     String SERVERID_NOT_FOUND = "103";
-    String SERVERID_NOT_FOUND_DESC = "serverId not found";
+    String SERVERID_NOT_FOUND_DESC = "不存在的serverId";
     String PARAM_ERROR = "104";
-    String PARAM_ERROR_DESC = "param not found or null";
+    String PARAM_ERROR_DESC = "非必传字段值为空";
     String DB_ERROR = "105";
     String DB_ERROR_DESC = "db error";
     String PARAM_NULL = "106";
-    String PARAM_NULL_DESC = "该传值的字段为空";
+    String PARAM_NULL_DESC = "必传值字段为空";
     String PARAM_LESS = "107";
     String PARAM_LESS_DESC = "接口传参不合法";
 

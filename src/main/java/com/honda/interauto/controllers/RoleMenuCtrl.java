@@ -3,6 +3,7 @@ package com.honda.interauto.controllers;
 import com.honda.interauto.dao.user.MenuDao;
 import com.honda.interauto.entity.MenuEntity;
 import com.honda.interauto.entity.RoleEntity;
+import com.honda.interauto.pojo.BaseError;
 import com.honda.interauto.pojo.ReqPojo;
 import com.honda.interauto.pojo.ResPojo;
 import com.honda.interauto.services.MenuService;
@@ -15,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 
 @RestController
@@ -49,9 +48,28 @@ public class RoleMenuCtrl {
             menuList = menuService.getMenuById(fatherList, null);
         }
 
+        Map<String, List<Map<String, String>>>  roleMenuMap = new HashMap<String, List<Map<String, String>>>();
+        for (MenuEntity menuEntity : menuList){
+            String firstLV = new String();
+            List<Map<String, String>> secondLV = new ArrayList<Map<String, String>>();
+            if (StringUtils.isBlank(menuEntity.getFatherMenu())){
+                firstLV = menuEntity.getId().toString() + menuEntity.getMenuName();
+                secondLV = new ArrayList<Map<String, String>>();
+                Map<String, String> secondLVMap = new HashMap<String, String>();
+                for (MenuEntity menuEntityChild : menuList){
+                    if (menuEntityChild.getFatherMenu().equals(menuEntity.getId())){
+                        secondLVMap.put(menuEntityChild.getId().toString(), menuEntityChild.getMenuName());
+                    }
+                }
+                secondLV.add(secondLVMap);
+            }
+            roleMenuMap.put(firstLV, secondLV);
+        }
+
+
         ResPojo res = new ResPojo();
-        res.putData("role", roleEntity);
-        res.putData("menu", menuList);
+        res.setResCode(BaseError.RESPONSE_OK);
+        res.putData("menu", roleMenuMap);
         return res;
     }
 }
