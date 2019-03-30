@@ -26,6 +26,7 @@
 
     <select id="getAllOverView" parameterType="int" resultMap="baseCaseResOverView">
         select id, <include refid="caseResOverView"/> from t_caseRes_overView t where 1 = 1
+        <if test="proId != null">and t.proId = #{proId}</if>
         order by t.startTime desc
         limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
     </select>
@@ -38,7 +39,15 @@
         limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
     </select>
 
+    <select id="getAllProRes" parameterType="int" resultMap="baseCaseResOverView">
+        select id, <include refid="caseResOverView"/> from t_caseRes_overView t where 1 = 1
+        GROUP BY t.proId
+        order by t.proId asc, t.startTime desc
+        limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
+    </select>
+
     <select id="getCountRes" resultType="int">
-        select count(*) from t_caseRes_overView
+        select count(*) from t_caseRes_overView where 1 = 1
+        <if test="proId != null">proId = #{proId}</if>
     </select>
 </mapper>

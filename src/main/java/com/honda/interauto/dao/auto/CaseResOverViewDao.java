@@ -10,9 +10,11 @@ import java.util.List;
 public interface CaseResOverViewDao {
     Integer recordOverView(CaseResOverViewEntity caseResOverViewEntity);
 
-    List<CaseResOverViewEntity> getAllOverView(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize);
+    List<CaseResOverViewEntity> getAllOverView(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize, @Param("proId")Integer proId);
 
     List<CaseResOverViewEntity> getOperatorOverView(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize, @Param("operator")String operator);
 
-    Integer getCountRes();
+    Integer getCountRes(@Param("proId")Integer proId);
+
+    List<CaseResOverViewEntity> getAllProRes(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize);
 }

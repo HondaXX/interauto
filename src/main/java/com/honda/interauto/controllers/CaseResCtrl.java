@@ -35,14 +35,15 @@ public class CaseResCtrl {
         Integer pageNum = Integer.parseInt(reqPojo.getRequestBody().get("pageNum").toString());
         Integer pageSize = Integer.parseInt(reqPojo.getRequestBody().get("pageSize").toString());
         String operator = reqPojo.getRequestBody().get("operator").toString();
+        Integer proId = Integer.parseInt(reqPojo.getRequestBody().get("proId").toString());
 
         List<CaseResOverViewEntity> caseResList = new ArrayList<CaseResOverViewEntity>();
         if (StringUtils.isBlank(operator)){
-            caseResList = caseResOverViewService.getAllOverView(pageNum, pageSize);
+            caseResList = caseResOverViewService.getAllOverView(pageNum, pageSize, proId);
         }else {
             caseResList = caseResOverViewService.getOperatorOverView(pageNum, pageSize, operator);
         }
-        int resCount = caseResOverViewService.getCountRes();
+        int resCount = caseResOverViewService.getCountRes(proId);
         ResPojo res = new ResPojo();
         res.putData("count", resCount);
         res.setResCode(BaseError.RESPONSE_OK);
@@ -56,14 +57,28 @@ public class CaseResCtrl {
         Integer pageNum = Integer.parseInt(reqPojo.getRequestBody().get("pageNum").toString());
         Integer pageSize = Integer.parseInt(reqPojo.getRequestBody().get("pageSize").toString());
         String runTagId = reqPojo.getRequestBody().get("tagId").toString();
-        String status = reqPojo.getRequestBody().get("status").toString();
+        String caseRes = reqPojo.getRequestBody().get("caseRes").toString();
 
-        List<CaseResDetailEntity> caseDetailList = caseResDetailService.getTagResDetail(runTagId, pageNum, pageSize, status);
+        List<CaseResDetailEntity> caseDetailList = caseResDetailService.getTagResDetail(runTagId, pageNum, pageSize, caseRes);
         int detailCount = caseResDetailService.getTagResCount(runTagId);
         ResPojo res = new ResPojo();
         res.setResCode(BaseError.RESPONSE_OK);
         res.putData("count", detailCount);
         res.putData("resList", caseDetailList);
+        return res;
+    }
+
+    @PostMapping(value = "GetAllProRes.json", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public ResPojo getAllProRes(@RequestBody ReqPojo reqPojo){
+        Integer pageNum = Integer.parseInt(reqPojo.getRequestBody().get("pageNum").toString());
+        Integer pageSize = Integer.parseInt(reqPojo.getRequestBody().get("pageSize").toString());
+
+        List<CaseResOverViewEntity> proOverView = caseResOverViewService.getAllProRes(pageNum, pageSize);
+
+        ResPojo res = new ResPojo();
+        res.setResCode(BaseError.RESPONSE_OK);
+        res.putData("resList", proOverView);
         return res;
     }
 }

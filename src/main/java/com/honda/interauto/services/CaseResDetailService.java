@@ -16,11 +16,13 @@ public class CaseResDetailService {
         return caseResDetailDao.saveCaseRes(caseResDetailEntity);
     }
 
-    public List<CaseResDetailEntity> getTagResDetail(String runTagId, Integer pageNum, Integer pageSize, String status){
-        return caseResDetailDao.getTagResDetail(runTagId, pageNum, pageSize, status);
+    public List<CaseResDetailEntity> getTagResDetail(String runTagId, Integer pageNum, Integer pageSize, String caseRes){
+        return caseResDetailDao.getTagResDetail(runTagId, pageNum, pageSize, caseRes);
     }
 
     public Integer getTagResCount(String runTagId){
         return caseResDetailDao.getTagResCount(runTagId);
     }
+
+
 }

@@ -10,7 +10,8 @@ import java.util.List;
 public interface CaseResDetailDao {
     Integer saveCaseRes(CaseResDetailEntity caseResDetailEntity);
 
-    List<CaseResDetailEntity> getTagResDetail(@Param("runTagId")String runTagId, @Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize, @Param("status")String status);
+    List<CaseResDetailEntity> getTagResDetail(@Param("runTagId")String runTagId, @Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize, @Param("caseRes")String caseRes);
 
     Integer getTagResCount(@Param("runTagId")String runTagId);
+
 }

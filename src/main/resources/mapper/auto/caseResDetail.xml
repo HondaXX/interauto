@@ -26,7 +26,7 @@
         select id, <include refid="caseRes"/> from t_caseRes_detail t where 1 = 1
         <!--and <if test="pageNum != null">t.id &gt; (#{pageNum} - 1) * #{pageSize} and t.id &lt;= (#{pageNum} * #{pageSize})</if>-->
         <if test="runTagId != null">and t.tagId = #{runTagId}</if>
-        <if test="status != null and '' != status">and t.caseRes = #{status}</if>
+        <if test="caseRes != null and '' != caseRes">and t.caseRes = #{caseRes}</if>
         order by t.id desc
         limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
     </select>

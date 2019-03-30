@@ -17,16 +17,20 @@ public class CaseResOverViewService {
         return caseResOverViewDao.recordOverView(caseResOverViewEntity);
     }
 
-    public List<CaseResOverViewEntity> getAllOverView(Integer pageNum, Integer pageSize){
-        return caseResOverViewDao.getAllOverView(pageNum, pageSize);
+    public List<CaseResOverViewEntity> getAllOverView(Integer pageNum, Integer pageSize, Integer proId){
+        return caseResOverViewDao.getAllOverView(pageNum, pageSize, proId);
     }
 
     public List<CaseResOverViewEntity> getOperatorOverView(Integer pageNum, Integer pageSize, String operator){
         return caseResOverViewDao.getOperatorOverView(pageNum, pageSize, operator);
     }
 
-    public Integer getCountRes(){
-        return caseResOverViewDao.getCountRes();
+    public Integer getCountRes(Integer proId){
+        return caseResOverViewDao.getCountRes(proId);
+    }
+
+    public List<CaseResOverViewEntity> getAllProRes(Integer pageNum, Integer pageSize){
+        return caseResOverViewDao.getAllProRes(pageNum, pageSize);
     }
 
 }
