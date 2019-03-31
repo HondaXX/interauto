@@ -14,25 +14,40 @@
         <id property="caseResDetail" column="caseResDetail" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <resultMap id="caseResDtoMap" type="com.honda.interauto.dto.CaseResDto">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <id property="tagId" column="tagId" jdbcType="VARCHAR"/>
+        <id property="caseId" column="caseId" jdbcType="BIGINT"/>
+        <id property="caseRes" column="caseRes" jdbcType="VARCHAR"/>
+        <id property="caseResCode" column="caseResCode" jdbcType="VARCHAR"/>
+        <id property="caseDes" column="caseResDes" jdbcType="VARCHAR"/>
+        <id property="caseResDetail" column="caseResDetail" jdbcType="VARCHAR"/>
+        <id property="caseAim" column="caseAim" jdbcType="VARCHAR"/>
+        <id property="interUrl" column="interUrl" jdbcType="VARCHAR"/>
+    </resultMap>
+
     <sql id="caseRes">
-		tagId, caseId, caseRes, caseResCode, caseResDes, caseResDetail
+		tagId, caseRes, caseResCode, caseResDes, caseResDetail
 	</sql>
 
     <insert id="saveCaseRes" parameterType="com.honda.interauto.entity.CaseResDetailEntity" keyProperty="id" useGeneratedKeys="true">
-        insert into t_caseRes_detail (<include refid="caseRes"/>) values(#{tagId}, #{caseId}, #{caseRes}, #{caseResCode}, #{caseDes}, #{caseResDetail})
+        insert into t_caseRes_detail (caseId, <include refid="caseRes"/>) values(#{caseId}, #{tagId}, #{caseRes}, #{caseResCode}, #{caseDes}, #{caseResDetail})
     </insert>
-
-    <select id="getTagResDetail" parameterType="java.lang.String" resultMap="baseCaseResDetail">
-        select id, <include refid="caseRes"/> from t_caseRes_detail t where 1 = 1
-        <!--and <if test="pageNum != null">t.id &gt; (#{pageNum} - 1) * #{pageSize} and t.id &lt;= (#{pageNum} * #{pageSize})</if>-->
-        <if test="runTagId != null">and t.tagId = #{runTagId}</if>
-        <if test="caseRes != null and '' != caseRes">and t.caseRes = #{caseRes}</if>
-        order by t.id desc
-        limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
-    </select>
 
     <select id="getTagResCount" parameterType="java.lang.String" resultType="int">
         select count(*) from t_caseRes_detail where 1 = 1
         and <if test="runTagId != null">tagId = #{runTagId}</if>
     </select>
+
+    <select id="getCaseResDetail" resultMap="caseResDtoMap">
+        select t.id, t.caseId, <include refid="caseRes"/>, i.caseAim, i.interUrl from t_caseRes_detail t left join t_intercase i on t.caseId = i.caseId where 1 = 1
+        <if test="runTagId != null and '' != runTagId">and t.tagId = #{runTagId}</if>
+        <if test="caseId != null">and t.caseId = #{caseId}</if>
+        <if test="caseRes != null and '' != caseRes">and t.caseRes = #{caseRes}</if>
+        <if test="caseAim != null and '' != caseAim">and i.caseAim like CONCAT('%', #{caseAim, jdbcType=VARCHAR}, '%')</if>
+        <if test="interUrl != null and '' != interUrl">and i.interUrl = #{interUrl}</if>
+        order by t.id desc
+        limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
+    </select>
+
 </mapper>

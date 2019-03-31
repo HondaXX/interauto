@@ -1,5 +1,7 @@
 package com.honda.interauto.controllers;
 
+import com.honda.interauto.dto.CaseResDto;
+import com.honda.interauto.dto.CaseResOverViewDto;
 import com.honda.interauto.entity.CaseResDetailEntity;
 import com.honda.interauto.entity.CaseResOverViewEntity;
 import com.honda.interauto.pojo.BaseError;
@@ -34,16 +36,20 @@ public class CaseResCtrl {
     public ResPojo getRes(@RequestBody ReqPojo reqPojo){
         Integer pageNum = Integer.parseInt(reqPojo.getRequestBody().get("pageNum").toString());
         Integer pageSize = Integer.parseInt(reqPojo.getRequestBody().get("pageSize").toString());
-        String operator = reqPojo.getRequestBody().get("operator").toString();
-        Integer proId = Integer.parseInt(reqPojo.getRequestBody().get("proId").toString());
 
-        List<CaseResOverViewEntity> caseResList = new ArrayList<CaseResOverViewEntity>();
-        if (StringUtils.isBlank(operator)){
-            caseResList = caseResOverViewService.getAllOverView(pageNum, pageSize, proId);
-        }else {
-            caseResList = caseResOverViewService.getOperatorOverView(pageNum, pageSize, operator);
+        String operator = reqPojo.getRequestBody().get("operator").toString();
+        String proIdStr = reqPojo.getRequestBody().get("proId").toString();
+
+        Integer proId = null;
+        if (!StringUtils.isBlank(proIdStr)){
+            proId = Integer.parseInt(proIdStr);
         }
+
+        List<CaseResOverViewDto> caseResList = new ArrayList<CaseResOverViewDto>();
+        caseResList = caseResOverViewService.getOverView(pageNum, pageSize, proId, operator);
+
         int resCount = caseResOverViewService.getCountRes(proId);
+
         ResPojo res = new ResPojo();
         res.putData("count", resCount);
         res.setResCode(BaseError.RESPONSE_OK);
@@ -57,13 +63,25 @@ public class CaseResCtrl {
         Integer pageNum = Integer.parseInt(reqPojo.getRequestBody().get("pageNum").toString());
         Integer pageSize = Integer.parseInt(reqPojo.getRequestBody().get("pageSize").toString());
         String runTagId = reqPojo.getRequestBody().get("tagId").toString();
-        String caseRes = reqPojo.getRequestBody().get("caseRes").toString();
+        String caseIdStr = reqPojo.getRequestBody().get("caseId").toString();
 
-        List<CaseResDetailEntity> caseDetailList = caseResDetailService.getTagResDetail(runTagId, pageNum, pageSize, caseRes);
-        int detailCount = caseResDetailService.getTagResCount(runTagId);
+        String caseRes = reqPojo.getRequestBody().get("caseRes").toString();
+        String interUrl = reqPojo.getRequestBody().get("interUrl").toString();
+        String caseAim = reqPojo.getRequestBody().get("caseAim").toString();
+
+        Integer caseId = null;
+        if (!StringUtils.isBlank(caseIdStr)){
+            caseId = Integer.parseInt(caseIdStr);
+        }
+
+        List<CaseResDto> caseDetailList = caseResDetailService.getCaseResDetail(runTagId, pageNum, pageSize, caseRes, caseId, caseAim, interUrl);
+
         ResPojo res = new ResPojo();
         res.setResCode(BaseError.RESPONSE_OK);
-        res.putData("count", detailCount);
+        if (!StringUtils.isBlank(runTagId)){
+            int detailCount = caseResDetailService.getTagResCount(runTagId);
+            res.putData("count", detailCount);
+        }
         res.putData("resList", caseDetailList);
         return res;
     }
@@ -74,7 +92,7 @@ public class CaseResCtrl {
         Integer pageNum = Integer.parseInt(reqPojo.getRequestBody().get("pageNum").toString());
         Integer pageSize = Integer.parseInt(reqPojo.getRequestBody().get("pageSize").toString());
 
-        List<CaseResOverViewEntity> proOverView = caseResOverViewService.getAllProRes(pageNum, pageSize);
+        List<CaseResOverViewDto> proOverView = caseResOverViewService.getAllOverView(pageNum, pageSize);
 
         ResPojo res = new ResPojo();
         res.setResCode(BaseError.RESPONSE_OK);

@@ -6,13 +6,28 @@
 <mapper namespace="com.honda.interauto.dao.auto.CaseResOverViewDao">
     <resultMap id="baseCaseResOverView" type="com.honda.interauto.entity.CaseResOverViewEntity">
         <id property="id" column="id" jdbcType="BIGINT"/>
+        <id property="proId" column="proId" jdbcType="BIGINT"/>
         <id property="tagId" column="tagId" jdbcType="VARCHAR"/>
         <id property="totalCount" column="total" jdbcType="BIGINT"/>
         <id property="failCount" column="fail" jdbcType="BIGINT"/>
         <id property="successCount" column="success" jdbcType="BIGINT"/>
         <id property="operator" column="operator" jdbcType="VARCHAR"/>
-        <result property="startTime" column="startTime" javaType="java.lang.String" jdbcType="TIMESTAMP"/>
-        <result property="endTime" column="endTime" javaType="java.lang.String" jdbcType="TIMESTAMP"/>
+        <id property="startTime" column="startTime" javaType="java.lang.String" jdbcType="TIMESTAMP"/>
+        <id property="endTime" column="endTime" javaType="java.lang.String" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="caseResOverViewDto" type="com.honda.interauto.dto.CaseResOverViewDto">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <id property="proId" column="proId" jdbcType="BIGINT"/>
+        <id property="tagId" column="tagId" jdbcType="VARCHAR"/>
+        <id property="totalCount" column="total" jdbcType="BIGINT"/>
+        <id property="failCount" column="fail" jdbcType="BIGINT"/>
+        <id property="successCount" column="success" jdbcType="BIGINT"/>
+        <id property="operator" column="operator" jdbcType="VARCHAR"/>
+        <id property="startTime" column="startTime" javaType="java.lang.String" jdbcType="TIMESTAMP"/>
+        <id property="endTime" column="endTime" javaType="java.lang.String" jdbcType="TIMESTAMP"/>
+        <id property="proName" column="proName" jdbcType="VARCHAR"/>
+        <id property="proDesc" column="proDesc" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="caseResOverView">
@@ -20,27 +35,21 @@
 	</sql>
 
     <insert id="recordOverView" parameterType="com.honda.interauto.entity.CaseResOverViewEntity" keyProperty="id" useGeneratedKeys="true">
-        insert into t_caseRes_overView (<include refid="caseResOverView"/>) values(#{tagId}, #{totalCount}, #{failCount}, #{successCount}, #{operator},
+        insert into t_caseRes_overView (proId, <include refid="caseResOverView"/>) values(#{proId}, #{tagId}, #{totalCount}, #{failCount}, #{successCount}, #{operator},
         #{startTime, jdbcType=TIMESTAMP}, #{endTime, jdbcType=TIMESTAMP})
     </insert>
 
-    <select id="getAllOverView" parameterType="int" resultMap="baseCaseResOverView">
-        select id, <include refid="caseResOverView"/> from t_caseRes_overView t where 1 = 1
+    <select id="getOverView" resultMap="caseResOverViewDto">
+        select t.id, t.proId, <include refid="caseResOverView"/>, p.proName, p.proDesc from t_caseRes_overView t left join t_pro p on t.proId = p.id where 1 = 1
         <if test="proId != null">and t.proId = #{proId}</if>
+        <if test="operator != null and '' != operator">and t.operator = #{operator}</if>
         order by t.startTime desc
-        limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
-    </select>
-
-    <select id="getOperatorOverView" parameterType="int" resultMap="baseCaseResOverView">
-        select id, <include refid="caseResOverView"/> from t_caseRes_overView t where 1 = 1
         <!--and <if test="pageNum != null">t.id &gt; (#{pageNum} - 1) * #{pageSize} and t.id &lt;= (#{pageNum} * #{pageSize})</if>-->
-        and <if test="operator != null">t.operator = #{operator}</if>
-        order by t.startTime desc
         limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
     </select>
 
-    <select id="getAllProRes" parameterType="int" resultMap="baseCaseResOverView">
-        select id, <include refid="caseResOverView"/> from t_caseRes_overView t where 1 = 1
+    <select id="getAllOverView" parameterType="int" resultMap="caseResOverViewDto">
+        select t.id, t.proId, <include refid="caseResOverView"/>, p.proName, p.proDesc from t_caseRes_overView t left join t_pro p on t.proId = p.id where 1 = 1
         GROUP BY t.proId
         order by t.proId asc, t.startTime desc
         limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
@@ -48,6 +57,6 @@
 
     <select id="getCountRes" resultType="int">
         select count(*) from t_caseRes_overView where 1 = 1
-        <if test="proId != null">proId = #{proId}</if>
+        <if test="proId != null">and proId = #{proId}</if>
     </select>
 </mapper>

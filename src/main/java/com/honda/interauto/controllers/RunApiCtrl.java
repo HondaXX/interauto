@@ -159,7 +159,7 @@ public class RunApiCtrl {
 //                            cookieMap.put(OtherTool.splitStr(param, "@")[0], oValue.toString());
 //                        }
 //                    }
-                    cookieMap.put("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxIn0.qfd0G-elhE1aGr15LrnYlIZ_3UToaOM5HeMcXrmDGBM1551922887998");
+                    cookieMap.put("token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyIn0.B2xj-vO1sLy5qWVq14lLtb0qYx_KsjMVaTYT0SvBDTg1554035465587");
                     resInfo = HttpReqTool.httpReqJson(interCaseEntity, cookieMap);
                 }
                 if (null == resInfo){
@@ -233,8 +233,8 @@ public class RunApiCtrl {
                             caseResDetailService.saveCaseRes(caseResDetailEntity);
                             caseResMap.put(caseId, BaseError.CASE_COMP_UNEQ_DESC + failStr);
                         }
-                        //如果是键不存在
-                        if (caseResMap.containsKey("lessParam")){
+                        //如果是键不存在lessParamlessParam
+                        if (compareRes.containsKey("lessParam")){
                             String failStr = compareRes.get("lessParam");
                             logger.info("========>用例结果详情存库，caseId-->{}", caseId);
                             CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "1", BaseError.CASE_COMP_LESSKEY, BaseError.CASE_CONP_LESSKEY_DESC, "响应存在预期不存在的值:" + failStr);
@@ -305,7 +305,7 @@ public class RunApiCtrl {
         String userName = OtherTool.splitStr(runTagId, "-")[0];
         String endTime = simpleDateFormat.format(new Date());
         logger.info("========>统计批次【{}】用例概览,共{}条用例,成功-{},失败-{}", runTagId, totalCount, successCount, failCount);
-        CaseResOverViewEntity caseResOverViewEntity = new CaseResOverViewEntity(runTagId, totalCount, failCount, successCount, userName, startTime, endTime);
+        CaseResOverViewEntity caseResOverViewEntity = new CaseResOverViewEntity(runTagId, proId, totalCount, failCount, successCount, userName, startTime, endTime);
         caseResOverViewService.recordOverView(caseResOverViewEntity);
         res.setResCode(BaseError.RESPONSE_OK);
         res.putData("resDetail", caseResMap);
