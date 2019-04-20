@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.honda.interauto.dao.auto.AppInfoDao">
+    <resultMap id="baseAppMap" type="com.honda.interauto.entity.AppInfoEntity">
+        <id property="appId" column="id"/>
+        <id property="appPackage" column="appPackage"/>
+        <id property="appActivity" column="appActivity"/>
+        <id property="appWaitActivity" column="appWaitActivity"/>
+        <id property="appDes" column="appDes"/>
+        <id property="creator" column="creator"/>
+        <id property="createTime" column="createTime" javaType="java.lang.String" jdbcType="TIMESTAMP"/>
+        <id property="updataTime" column="updataTime" javaType="java.lang.String" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="appInfo">
+		appPackage, appActivity, appWaitActivity, appDes, creator, createTime, updataTime
+	</sql>
+
+    <select id="getAllApps" resultMap="baseAppMap">
+        select id, <include refid="appInfo"/> from t_app_info order by createTime asc
+    </select>
+
+    <select id="getAppById" resultMap="baseAppMap">
+        select id, <include refid="appInfo"/> from t_app_info t where 1 = 1
+        <if test="appId != null">and t.id = #{appId}</if>
+    </select>
+
+    <insert id="newApp" parameterType="com.honda.interauto.entity.AppInfoEntity" keyProperty="id" useGeneratedKeys="true">
+        insert into t_app_info (<include refid="appInfo"/>) values (#{appPackage}, #{appActivity}, #{appWaitActivity}, #{appDes}, #{creator},
+        #{createTime, jdbcType=TIMESTAMP}, #{updataTime, jdbcType=TIMESTAMP})
+    </insert>
+</mapper>

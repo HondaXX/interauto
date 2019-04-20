@@ -40,6 +40,7 @@ mybatis:
 
 baseconfigs:
   zipFilePath: D:\work\idea\temp\file\interauto\zipFile
+  appiumServerHost: http://127.0.0.1:4723/wd/hub
 
 redis:
   hostName: 127.0.0.1 #10.83.0.30  127.0.0.1

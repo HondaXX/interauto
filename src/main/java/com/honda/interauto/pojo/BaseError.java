@@ -49,6 +49,14 @@ public interface BaseError {
     String USER_TOKENNOTMATCH_DESC = "token与用户不匹配，请重新登录";
 
 
+    //Appium
+    String PHONE_NEW_FAILED = "400";
+    String PHONE_NEW_FAILED_DESC = "保存手机信息失败";
+    String APP_NEW_FAILED = "401";
+    String APP_NEW_FAILED_DESC = "保存app信息失败";
+    String APPIUM_INIT_FAILED = "402";
+    String APPIUM_INIT_FAILED_DESC = "初始化appium服务失败";
+
     //系统常量
     String RESULT_CODE = "resCode";
     String ERROR_CODE = "errorCode";

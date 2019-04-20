@@ -9,11 +9,21 @@ import org.springframework.stereotype.Service;
 public class BaseConfigs {
     private String zipFilePath;
 
+    private String appiumServerHost;
+
     public String getZipFilePath() {
         return zipFilePath;
     }
 
     public void setZipFilePath(String zipFilePath) {
         this.zipFilePath = zipFilePath;
+    }
+
+    public String getAppiumServerHost() {
+        return appiumServerHost;
+    }
+
+    public void setAppiumServerHost(String appiumServerHost) {
+        this.appiumServerHost = appiumServerHost;
     }
 }

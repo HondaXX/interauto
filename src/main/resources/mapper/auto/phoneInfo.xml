@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.honda.interauto.dao.auto.PhoneInfoDao">
+    <resultMap id="basePhoneMap" type="com.honda.interauto.entity.PhoneInfoEntity">
+        <id property="deviceId" column="id"/>
+        <id property="phoneName" column="phoneName"/>
+        <id property="platformName" column="platformName"/>
+        <id property="deviceName" column="deviceName"/>
+        <id property="platformVersion" column="platformVersion"/>
+        <id property="creator" column="creator"/>
+        <id property="createTime" column="createTime" javaType="java.lang.String" jdbcType="TIMESTAMP"/>
+        <id property="updataTime" column="updataTime" javaType="java.lang.String" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="phoneInfo">
+		phoneName, platformName, deviceName, platformVersion, creator, createTime, updataTime
+	</sql>
+
+    <select id="getAllPhones" resultMap="basePhoneMap">
+        select id, <include refid="phoneInfo"/> from t_phone_info order by createTime asc
+    </select>
+
+    <select id="getPhoneById" resultMap="basePhoneMap">
+        select id, <include refid="phoneInfo"/> from t_phone_info t where 1 = 1
+        <if test="deviceId != null">and t.id = #{deviceId}</if>
+    </select>
+
+    <insert id="newPhone" parameterType="com.honda.interauto.entity.PhoneInfoEntity" keyProperty="id" useGeneratedKeys="true">
+        insert into t_phone_info (<include refid="phoneInfo"/>) values (#{phoneName}, #{platformName}, #{deviceName}, #{platformVersion}, #{creator},
+        #{createTime, jdbcType=TIMESTAMP}, #{updataTime, jdbcType=TIMESTAMP})
+    </insert>
+</mapper>
