@@ -56,6 +56,10 @@ public interface BaseError {
     String APP_NEW_FAILED_DESC = "保存app信息失败";
     String APPIUM_INIT_FAILED = "402";
     String APPIUM_INIT_FAILED_DESC = "初始化appium服务失败";
+    String ELE_NOTFOUND = "403";
+    String ELE_NOTFOUND_DESC = "元素未找到";
+    String ELE_RES_NOTMATCH = "404";
+    String ELE_RES_NOTMATCH_DESC = "结果与预期不匹配";
 
     //系统常量
     String RESULT_CODE = "resCode";

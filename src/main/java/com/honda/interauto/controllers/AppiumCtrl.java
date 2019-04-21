@@ -1,18 +1,24 @@
 package com.honda.interauto.controllers;
 
 import com.honda.interauto.entity.AppInfoEntity;
+import com.honda.interauto.entity.EvenOperateEntity;
 import com.honda.interauto.entity.PhoneInfoEntity;
 import com.honda.interauto.pojo.BaseConfigs;
 import com.honda.interauto.pojo.BaseError;
 import com.honda.interauto.pojo.ReqPojo;
 import com.honda.interauto.pojo.ResPojo;
 import com.honda.interauto.services.AppInfoService;
+import com.honda.interauto.services.EvenOperateService;
 import com.honda.interauto.services.PhoneInfoService;
+import com.honda.interauto.tools.appiumTool.ElementTool;
 import com.honda.interauto.tools.sysTool.TypeChangeTool;
+import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
+import io.appium.java_client.android.Activity;
 import io.appium.java_client.android.AndroidDriver;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
@@ -20,6 +26,7 @@ import org.openqa.selenium.OutputType;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,8 +40,12 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/Appium")
@@ -46,20 +57,31 @@ public class AppiumCtrl {
     @Autowired
     private AppInfoService appInfoService;
     @Autowired
+    private EvenOperateService evenOperateService;
+    @Autowired
     private BaseConfigs baseConfigs;
 
     @PostMapping(value = "/InitDeviceApp.json", produces = "application/json;charset=UTF-8" )
     public ResPojo initDevice(@RequestBody ReqPojo reqPojo){
         Integer deviceId = Integer.parseInt(reqPojo.getRequestBody().get("deviceId").toString());
         Integer appId = Integer.parseInt(reqPojo.getRequestBody().get("appId").toString());
+        List<Integer> evenList = (List<Integer>) reqPojo.getRequestBody().get("evenList");
+
+        Map<Integer, String> evenResMap = new HashMap<Integer, String>();
 
         PhoneInfoEntity phoneInfo = phoneInfoService.getPhoneById(deviceId);
         AppInfoEntity appInfo = appInfoService.getAppById(appId);
         //基础属性设置
         DesiredCapabilities desCap = new DesiredCapabilities();
-        desCap.setCapability("automationName", "Appium");
+        if (Integer.parseInt(String.valueOf(phoneInfo.getPlatformVersion().charAt(0))) >= 6){
+            desCap.setCapability("automationName", "UiAutomator2");
+        }else {
+            desCap.setCapability("automationName", "Appium");
+        }
         desCap.setCapability("newCommandTimeout", "30");
         desCap.setCapability("sessionOverride", true);
+        desCap.setCapability("noReset", true);
+        desCap.setCapability("noSign", true);
 //		cap.setCapability("unicodeKeyboard", true);
 //		cap.setCapability("resetKeyboard", false);
         //设备信息设置
@@ -72,13 +94,16 @@ public class AppiumCtrl {
         desCap.setCapability("appWaitActivity", appInfo.getAppWaitActivity());
 
         AndroidDriver<MobileElement> driver =null;
+        Activity mainActivity = new Activity(appInfo.getAppPackage(), appInfo.getAppActivity());
+        WebDriverWait waitor = null;
         try{
             driver = new AndroidDriver<MobileElement>(new URL(baseConfigs.getAppiumServerHost()), desCap);
             driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
-            TypeChangeTool.sysSleep(2);
             if (driver != null){
                 logger.info("========>初始化appium服务成功");
             }
+            //等待一个事务，多少秒没完成便退出
+            waitor = new WebDriverWait(driver, 2);
         }catch (MalformedURLException e){
             logger.info("========>appium服务连接设备失败");
             e.printStackTrace();
@@ -88,25 +113,72 @@ public class AppiumCtrl {
             return res;
         }
 
-        WebElement element1 = driver.findElement(By.xpath("//android.widget.TextView[@resource-id='com.miui.calculator:id/btn_1_s']"));
-        TypeChangeTool.sysSleep(2);
-        element1.click();
-        WebElement elementJia = driver.findElement(By.xpath("//android.widget.ImageView[@resource-id='com.miui.calculator:id/btn_plus_s']"));
-        TypeChangeTool.sysSleep(2);
-        elementJia.click();
-        WebElement element5 = driver.findElement(By.xpath("//android.widget.TextView[@resource-id='com.miui.calculator:id/btn_5_s']"));
-        TypeChangeTool.sysSleep(2);
-        element5.click();
-        WebElement elementDY = driver.findElement(By.xpath("//android.widget.ImageView[@resource-id='com.miui.calculator:id/btn_equal_s']"));
-        TypeChangeTool.sysSleep(2);
-        elementDY.click();
+        for (Integer evenId : evenList){
+            driver.startActivity(mainActivity);
+            logger.info("========>开始事件,id为{}", evenId);
+            List<EvenOperateEntity> operateList = evenOperateService.getEvenByEvenId(evenId);
+            //操作事件里的所有步骤
+            for (EvenOperateEntity evenOperate : operateList){
+                //sort为0的时结果比较，直接跳过
+                if (evenOperate.getSort() == 0){
+                    continue;
+                }
+                Integer sortId = evenOperate.getSort();
+                logger.info("========>执行事件中步骤id:{}", sortId);
+                WebElement ele = ElementTool.eleIsExist(driver, evenOperate.getEleMethod(), evenOperate.getEleIdentify(), waitor);
+                if (ele == null){
+                    logger.info("========>步骤id为{}的元素找不到, 跳过该事件", sortId);
+                    evenResMap.put(evenId, sortId + "->" + BaseError.ELE_NOTFOUND_DESC);
+                    ElementTool.getScreenShot(driver, baseConfigs.getAppiumScreenFile());
+                    continue;
+                }
+
+                switch (evenOperate.getEleOperate()){
+                    case 1:
+                        ele.click();
+                        continue;
+                    case 2:
+                        ele.sendKeys(evenOperate.getEleText());
+                        continue;
+                    case 3:
+                        ele.getText();
+                        continue;
+                    case 4:
+                        ElementTool.slipModule(driver, ele, evenOperate.getSlipDerection());
+                        continue;
+                }
+            }
+            //获得事件的结果对象
+            EvenOperateEntity evenRes = operateList.stream().filter(evenOperate -> evenOperate.getSort() == 0).collect(Collectors.toList()).get(0);
+            WebElement eleRes = ElementTool.eleIsExist(driver, evenRes.getEleMethod(), evenRes.getEleIdentify(), waitor);
+
+            if (evenRes.getEleOperate() == 3){
+                String exceptRes = evenRes.getEleText();
+                if (!(eleRes.getText().equals(exceptRes))){
+                    logger.info("========>事件id:" + evenId + "-->测试未通过, 预期结果:" + evenRes.getEleText() + "&实际结果:" + eleRes.getText());
+                    evenResMap.put(evenId, BaseError.ELE_RES_NOTMATCH_DESC);
+                    ElementTool.getScreenShot(driver, baseConfigs.getAppiumScreenFile());
+                    continue;
+                }
+                logger.info("========>事件id:{}-->测试通过", evenId);
+                evenResMap.put(evenId, "pass");
+                continue;
+            }else if (evenRes.getEleOperate() == 1){
+                eleRes.click();
+                logger.info("========>事件id:{}-->测试通过", evenId);
+                evenResMap.put(evenId, "pass");
+                continue;
+            }
+
+        }
+
 
         driver.closeApp();
         driver.quit();
 
         ResPojo res = new ResPojo();
         res.setResCode(BaseError.RESPONSE_OK);
-        res.put("res", "success");
+        res.put("res", evenResMap);
         return res;
     }
 
@@ -205,9 +277,19 @@ public class AppiumCtrl {
     }
 
     public static void main(String[] args){
+//        String astr = "4.4.4";
+//        StringBuilder sb = new StringBuilder();
+//        for (int i = 0; i < astr.length(); i++){
+//            if (Character.isDigit(astr.charAt(i))){
+//                sb.append(astr.charAt(i));
+//            }
+//        }
+//        String newStr = sb.toString();
+//        System.out.println(newStr);
+
         DesiredCapabilities desCap = new DesiredCapabilities();
 
-//        desCap.setCapability("automationName", "Appium");
+        desCap.setCapability("automationName", "Appium");
         desCap.setCapability("deviceName", "7145da7f");
         desCap.setCapability("platformName", "Android");
         desCap.setCapability("platformVersion", "4.4.4");
@@ -226,7 +308,7 @@ public class AppiumCtrl {
             driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
             TypeChangeTool.sysSleep(2);
 
-            WebElement element1 = driver.findElement(By.xpath("//android.widget.TextView[@resource-id='com.miui.calculator:id/btn_1_s']"));
+            WebElement element1 = driver.findElement(By.xpath("//android.widget.TextView[@resource-id='com.miui.calculator:id/btn_']"));
             TypeChangeTool.sysSleep(2);
             element1.click();
             WebElement elementJia = driver.findElement(By.xpath("//android.widget.ImageView[@resource-id='com.miui.calculator:id/btn_plus_s']"));
@@ -254,29 +336,9 @@ public class AppiumCtrl {
 //            List<MobileElement> eleList = driver.findElementsByClassName("android.widget.TextView");
 //            eleList.forEach(webEle -> System.out.println("===>" + webEle.getText()));
 
-            TouchAction ta = new TouchAction(driver);
-            System.out.println("====>长按截图开始");
-            ta.longPress(elementJG).waitAction(Duration.ofSeconds(2));
-            ta.perform();
 
-            String basePath = "D:\\work\\idea\\temp\\file\\interauto\\Screenshot\\";
-            SimpleDateFormat sdfD = new SimpleDateFormat("yyyyMMdd");
-            SimpleDateFormat sdfT = new SimpleDateFormat("HHmmss");
-            Date date = new Date();
-            String dirPath = basePath + sdfD.format(date);
-            String fileName = sdfT.format(date);
-            try {
-                File file = new File(dirPath);
-                if (!file.exists()) {
-                    System.out.println("创建不存在文件夹");
-                    file.mkdirs();
-                }
-                File imageFile = driver.getScreenshotAs(OutputType.FILE);
-                FileUtils.copyFile(imageFile, new File(dirPath + File.separator + fileName +".jpg"));
-            }catch (Exception e){
-                System.out.println("截图保存错误");
-                e.printStackTrace();
-            }
+
+
             driver.closeApp();
             driver.quit();
         }catch (MalformedURLException e){

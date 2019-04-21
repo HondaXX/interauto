@@ -11,6 +11,8 @@ public class BaseConfigs {
 
     private String appiumServerHost;
 
+    private String appiumScreenFile;
+
     public String getZipFilePath() {
         return zipFilePath;
     }
@@ -25,5 +27,13 @@ public class BaseConfigs {
 
     public void setAppiumServerHost(String appiumServerHost) {
         this.appiumServerHost = appiumServerHost;
+    }
+
+    public String getAppiumScreenFile() {
+        return appiumScreenFile;
+    }
+
+    public void setAppiumScreenFile(String appiumScreenFile) {
+        this.appiumScreenFile = appiumScreenFile;
     }
 }

@@ -90,7 +90,7 @@ public class TypeChangeTool {
 
     public static void sysSleep(int sleepTime){
         try {
-            logger.debug("sleep...{} seconds", sleepTime);
+//            logger.debug("sleep...{} seconds", sleepTime);
             Thread.sleep(sleepTime * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();

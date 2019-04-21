@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.honda.interauto.dao.auto.EvenOperateDao">
+    <resultMap id="EvenOperateMap" type="com.honda.interauto.entity.EvenOperateEntity">
+        <id property="operateId" column="id"/>
+        <id property="evenId" column="evenId"/>
+        <id property="sort" column="sort"/>
+        <id property="eleMethod" column="eleMethod"/>
+        <id property="eleIdentify" column="eleIdentify"/>
+        <id property="eleOperate" column="eleOperate"/>
+        <id property="eleText" column="eleText"/>
+        <id property="slipDerection" column="slipDerection"/>
+        <id property="beforeEven" column="beforeEven"/>
+        <id property="creator" column="creator"/>
+        <id property="createTime" column="createTime" javaType="java.lang.String" jdbcType="TIMESTAMP"/>
+        <id property="updataTime" column="updataTime" javaType="java.lang.String" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="evenOperate">
+        evenId, sort, eleMethod, eleIdentify, eleOperate, eleText, slipDerection, beforeEven, creator, createTime, updataTime
+	</sql>
+
+    <select id="getEvenByEvenId" resultMap="EvenOperateMap">
+        select id, <include refid="evenOperate"/> from t_even_operate t where 1 = 1
+        <if test="evenId != null">and t.evenId = #{evenId}</if>
+        order by t.sort asc;
+    </select>
+</mapper>

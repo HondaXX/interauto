@@ -39,6 +39,7 @@ mybatis:
 baseconfigs:
   zipFilePath: /opt/appl/interauto/zipFile
   appiumServerHost: http://127.0.0.1:4723/wd/hub
+  appiumScreenFile: /opt/appl/interauto/Screenshot/
 
 redis:
   hostName: 10.83.0.30
