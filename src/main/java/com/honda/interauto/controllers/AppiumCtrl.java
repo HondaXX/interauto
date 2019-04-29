@@ -26,6 +26,7 @@ import org.openqa.selenium.OutputType;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,10 +40,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -75,15 +73,17 @@ public class AppiumCtrl {
         DesiredCapabilities desCap = new DesiredCapabilities();
         if (Integer.parseInt(String.valueOf(phoneInfo.getPlatformVersion().charAt(0))) >= 6){
             desCap.setCapability("automationName", "UiAutomator2");
-        }else {
+        }
+        else {
             desCap.setCapability("automationName", "Appium");
         }
         desCap.setCapability("newCommandTimeout", "30");
         desCap.setCapability("sessionOverride", true);
         desCap.setCapability("noReset", true);
         desCap.setCapability("noSign", true);
-//		cap.setCapability("unicodeKeyboard", true);
-//		cap.setCapability("resetKeyboard", false);
+        //设置中文输入
+        desCap.setCapability("unicodeKeyboard", true);
+        desCap.setCapability("resetKeyboard", true);
         //设备信息设置
         desCap.setCapability("platformName", phoneInfo.getPlatformName());
         desCap.setCapability("deviceName", phoneInfo.getDeviceName());
@@ -136,19 +136,42 @@ public class AppiumCtrl {
                 switch (evenOperate.getEleOperate()){
                     case 1:
                         ele.click();
-                        continue;
+                        break;
                     case 2:
                         ele.sendKeys(evenOperate.getEleText());
-                        continue;
+                        break;
                     case 3:
                         ele.getText();
-                        continue;
+                        break;
                     case 4:
-                        ElementTool.slipModule(driver, ele, evenOperate.getSlipDerection());
-                        continue;
+                        for (int k = 0; k < 6; k++){
+                            if (null == ElementTool.eleIsExist(driver, 12, evenOperate.getEleText(), waitor)){
+//                                waitor.until(ExpectedConditions.presenceOfElementLocated(By.xpath(evenOperate.getEleText()))).equals(null)
+                                ElementTool.slipModule(driver, ele, evenOperate.getSlipDerection());
+                                continue;
+                            }else{
+                                WebElement eleScroll = ElementTool.eleIsExist(driver, 12, evenOperate.getEleText(), waitor);
+                                eleScroll.click();
+                                break;
+                            }
+                        }
+                        logger.info("未找到等待滑动的元素,步骤id:{}", sortId);
+                        break;
+                    case 5:
+                        boolean switchStatus = evenOperate.getEleText().equals(String.valueOf(0)) ? false : true;
+//                        logger.info("---->" + ele.getAttribute("checked") + "---->" + switchStatus);
+                        if (ele.getAttribute("checked").equals(switchStatus)){
+                            break;
+                        }
+                        ele.click();
+                        break;
+                    case 6:
+                        ElementTool.longPress(driver, ele);
+                        break;
                 }
             }
             //获得事件的结果对象
+            logger.info("==>事件id{}开始对比结果", evenId);
             EvenOperateEntity evenRes = operateList.stream().filter(evenOperate -> evenOperate.getSort() == 0).collect(Collectors.toList()).get(0);
             WebElement eleRes = ElementTool.eleIsExist(driver, evenRes.getEleMethod(), evenRes.getEleIdentify(), waitor);
 
@@ -277,6 +300,7 @@ public class AppiumCtrl {
     }
 
     public static void main(String[] args){
+
 //        String astr = "4.4.4";
 //        StringBuilder sb = new StringBuilder();
 //        for (int i = 0; i < astr.length(); i++){
@@ -346,4 +370,6 @@ public class AppiumCtrl {
             e.printStackTrace();
         }
     }
+
+
 }

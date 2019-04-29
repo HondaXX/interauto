@@ -1,5 +1,6 @@
 package com.honda.interauto.tools.appiumTool;
 
+import com.honda.interauto.entity.EvenOperateEntity;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
@@ -19,9 +20,10 @@ import java.util.Date;
 public class ElementTool {
     private final static Logger logger = LogManager.getLogger(ElementTool.class);
 
-    private final static Integer TYPE_RESOURCE = 11;
-    private final static Integer TYPE_XPATH = 12;
-    private final static Integer TYPE_CLASSNAME = 13;
+    private final static int TYPE_RESOURCE = 11;
+    private final static int TYPE_XPATH = 12;
+    private final static int TYPE_CLASSNAME = 13;
+    private final static int TYPE_TOAST = 14;
 
     private final static Integer LEFT_TO_RIGHT = 1;
     private final static Integer RIGHT_TO_RIGHT = 2;
@@ -31,37 +33,40 @@ public class ElementTool {
     public static WebElement eleIsExist(AppiumDriver<MobileElement> driver, Integer eleType, String eleInfo, WebDriverWait waitor){
         WebElement ele = null;
         switch (eleType){
-            case 11:
+            case TYPE_RESOURCE:
                 try{
                     if (driver.findElement(By.id(eleInfo)) != null){
                         ele = driver.findElement(By.id(eleInfo));
                         return ele;
                     }
                 }catch (NoSuchElementException e){
-                    e.printStackTrace();
+                    logger.info("====>找不到元素:{}", eleInfo);
+//                    e.printStackTrace();
                     return null;
                 }
-            case 12:
+            case TYPE_XPATH:
                 try{
                     if (driver.findElement(By.xpath(eleInfo)) != null){
                         ele = driver.findElement(By.xpath(eleInfo));
                         return ele;
                     }
                 }catch (NoSuchElementException e){
-                    e.printStackTrace();
+                    logger.info("====>找不到元素:{}", eleInfo);
+//                    e.printStackTrace();
                     return null;
                 }
-            case 13:
+            case TYPE_CLASSNAME:
                 try{
                     if (driver.findElement(By.className(eleInfo)) != null){
                         ele = driver.findElement(By.className(eleInfo));
                         return ele;
                     }
                 }catch (NoSuchElementException e){
-                    e.printStackTrace();
+                    logger.info("====>找不到元素:{}", eleInfo);
+//                    e.printStackTrace();
                     return null;
                 }
-            case 14:
+            case TYPE_TOAST:
                 try{
                     if (waitor.until(ExpectedConditions.presenceOfElementLocated(By.xpath(eleInfo))) != null){
                         logger.info("==>处理toast弹窗...");
@@ -70,12 +75,14 @@ public class ElementTool {
                         return ele;
                     }
                 }catch (NoSuchElementException e){
-                    e.printStackTrace();
+                    logger.info("====>找不到元素:{}", eleInfo);
+//                    e.printStackTrace();
                     return null;
                 }
         }
         return null;
     }
+
 
     public static void slipScreen(AndroidDriver<MobileElement> driver, Integer direction){
         int width = driver.manage().window().getSize().getWidth();
@@ -114,6 +121,7 @@ public class ElementTool {
         int heightMod = diSize.getHeight();
         logger.info("==>ModelInfo-->x:{}, y:{}, width:{}, height:{}", startX, startY, widthMod, heightMod);
 
+
         switch (direction){
             case 1:  //向右
                 TouchAction rightswipe = new TouchAction(driver).press(startX + widthMod/10, startY + heightMod/2).waitAction(Duration.ofSeconds(2))
@@ -122,7 +130,7 @@ public class ElementTool {
                 break;
             case 2:  //向左
                 TouchAction leftswipe = new TouchAction(driver).press(startX + 9*widthMod/10, startY + heightMod/2).waitAction(Duration.ofSeconds(2))
-                                                               .moveTo(startX + 1*widthMod/10, startY + heightMod/2).release();
+                                                               .moveTo(startX + widthMod/10, startY + heightMod/2).release();
                 leftswipe.perform();
                 break;
             case 3:  //向下

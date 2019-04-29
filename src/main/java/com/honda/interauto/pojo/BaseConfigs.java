@@ -4,6 +4,9 @@ package com.honda.interauto.pojo;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @ConfigurationProperties(prefix = "baseconfigs")
 public class BaseConfigs {
@@ -36,4 +39,5 @@ public class BaseConfigs {
     public void setAppiumScreenFile(String appiumScreenFile) {
         this.appiumScreenFile = appiumScreenFile;
     }
+
 }
