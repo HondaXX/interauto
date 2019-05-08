@@ -1,32 +1,23 @@
 package com.honda.interauto.controllers;
 
-import com.honda.interauto.entity.AppInfoEntity;
-import com.honda.interauto.entity.EvenOperateEntity;
-import com.honda.interauto.entity.PhoneInfoEntity;
+import com.honda.interauto.entity.*;
 import com.honda.interauto.pojo.BaseConfigs;
 import com.honda.interauto.pojo.BaseError;
 import com.honda.interauto.pojo.ReqPojo;
 import com.honda.interauto.pojo.ResPojo;
-import com.honda.interauto.services.AppInfoService;
-import com.honda.interauto.services.EvenOperateService;
-import com.honda.interauto.services.PhoneInfoService;
+import com.honda.interauto.services.*;
 import com.honda.interauto.tools.appiumTool.ElementTool;
+import com.honda.interauto.tools.sysTool.OtherTool;
 import com.honda.interauto.tools.sysTool.TypeChangeTool;
-import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
-import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.Activity;
 import io.appium.java_client.android.AndroidDriver;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
-import org.openqa.selenium.OutputType;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,14 +26,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @RestController
@@ -58,14 +46,16 @@ public class AppiumCtrl {
     private EvenOperateService evenOperateService;
     @Autowired
     private BaseConfigs baseConfigs;
+    @Autowired
+    private CaseResDetailService caseResDetailService;
+    @Autowired
+    private CaseResOverViewService caseResOverViewService;
 
     @PostMapping(value = "/InitDeviceApp.json", produces = "application/json;charset=UTF-8" )
     public ResPojo initDevice(@RequestBody ReqPojo reqPojo){
         Integer deviceId = Integer.parseInt(reqPojo.getRequestBody().get("deviceId").toString());
         Integer appId = Integer.parseInt(reqPojo.getRequestBody().get("appId").toString());
         List<Integer> evenList = (List<Integer>) reqPojo.getRequestBody().get("evenList");
-
-        Map<Integer, String> evenResMap = new HashMap<Integer, String>();
 
         PhoneInfoEntity phoneInfo = phoneInfoService.getPhoneById(deviceId);
         AppInfoEntity appInfo = appInfoService.getAppById(appId);
@@ -113,10 +103,32 @@ public class AppiumCtrl {
             return res;
         }
 
+        Map<Integer, String> evenResMap = new HashMap<Integer, String>();
+        //用例数
+        Integer totalCount = 0;
+        int failCount = 0;
+        int successCount = 0;
+        //跑用例的动作id
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String startTime = simpleDateFormat.format(date);
+        String runTagId = caseResDetailService.runApiTagId(date);
+
         for (Integer evenId : evenList){
+            totalCount += 1;
+            //设置每个用例回到app起始页
             driver.startActivity(mainActivity);
+
             logger.info("========>开始事件,id为{}", evenId);
             List<EvenOperateEntity> operateList = evenOperateService.getEvenByEvenId(evenId);
+            if (operateList == null || operateList.size() == 0){
+                logger.info("========>id为{}的事件不存在或事件未添加步骤", evenId);
+                CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, null, evenId, "1", BaseError.EVEN_NOT_FOUND, BaseError.EVEN_NOT_FOUND_DESC, "事件不存在或未设置事件步骤");
+                caseResDetailService.saveCaseRes(caseResDetailEntity);
+                evenResMap.put(evenId, BaseError.EVEN_NOT_FOUND_DESC);
+                failCount += 1;
+                continue;
+            }
             //操作事件里的所有步骤
             for (EvenOperateEntity evenOperate : operateList){
                 //sort为0的时结果比较，直接跳过
@@ -128,10 +140,16 @@ public class AppiumCtrl {
                 WebElement ele = ElementTool.eleIsExist(driver, evenOperate.getEleMethod(), evenOperate.getEleIdentify(), waitor);
                 if (ele == null){
                     logger.info("========>步骤id为{}的元素找不到, 跳过该事件", sortId);
+                    CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, null, evenId, "1", BaseError.ELE_NOTFOUND, BaseError.ELE_NOTFOUND_DESC, "事件步骤id元素不存在:" + sortId);
+                    caseResDetailService.saveCaseRes(caseResDetailEntity);
                     evenResMap.put(evenId, sortId + "->" + BaseError.ELE_NOTFOUND_DESC);
                     ElementTool.getScreenShot(driver, baseConfigs.getAppiumScreenFile());
-                    continue;
+                    failCount += 1;
+                    break;
                 }
+
+                //定义元素操作是否出错，出错直接跳过
+                boolean operateRes = true;
 
                 switch (evenOperate.getEleOperate()){
                     case 1:
@@ -155,7 +173,12 @@ public class AppiumCtrl {
                                 break;
                             }
                         }
-                        logger.info("未找到等待滑动的元素,步骤id:{}", sortId);
+                        logger.info("未找到滑动后等待的元素,步骤id:{},跳过该事件", sortId);
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, null, evenId, "1", BaseError.ELE_NOTFOUND, BaseError.ELE_NOTFOUND_DESC, "滑动后应出现元素没出现:" + sortId);
+                        caseResDetailService.saveCaseRes(caseResDetailEntity);
+                        evenResMap.put(evenId, sortId + "->滑动-" + BaseError.ELE_NOTFOUND_DESC);
+                        ElementTool.getScreenShot(driver, baseConfigs.getAppiumScreenFile());
+                        operateRes = false;
                         break;
                     case 5:
                         boolean switchStatus = evenOperate.getEleText().equals(String.valueOf(0)) ? false : true;
@@ -169,6 +192,12 @@ public class AppiumCtrl {
                         ElementTool.longPress(driver, ele);
                         break;
                 }
+
+                if (operateRes == false) {
+                    failCount += 1;
+                    break;
+                }
+
             }
             //获得事件的结果对象
             logger.info("==>事件id{}开始对比结果", evenId);
@@ -179,22 +208,37 @@ public class AppiumCtrl {
                 String exceptRes = evenRes.getEleText();
                 if (!(eleRes.getText().equals(exceptRes))){
                     logger.info("========>事件id:" + evenId + "-->测试未通过, 预期结果:" + evenRes.getEleText() + "&实际结果:" + eleRes.getText());
+                    CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, null, evenId, "1", BaseError.ELE_RES_NOTMATCH, BaseError.ELE_RES_NOTMATCH_DESC, "预期结果:" + evenRes.getEleText() + "&实际结果:" + eleRes.getText());
+                    caseResDetailService.saveCaseRes(caseResDetailEntity);
                     evenResMap.put(evenId, BaseError.ELE_RES_NOTMATCH_DESC);
                     ElementTool.getScreenShot(driver, baseConfigs.getAppiumScreenFile());
+                    failCount += 1;
                     continue;
                 }
                 logger.info("========>事件id:{}-->测试通过", evenId);
-                evenResMap.put(evenId, "pass");
+                CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, null, evenId, "0", BaseError.CASE_OK, "success", "事件通过");
+                caseResDetailService.saveCaseRes(caseResDetailEntity);
+                successCount += 1;
+                evenResMap.put(evenId, BaseError.CASE_OK);
                 continue;
             }else if (evenRes.getEleOperate() == 1){
                 eleRes.click();
                 logger.info("========>事件id:{}-->测试通过", evenId);
-                evenResMap.put(evenId, "pass");
+                CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, null, evenId, "0", BaseError.CASE_OK, "success", "事件通过");
+                caseResDetailService.saveCaseRes(caseResDetailEntity);
+                successCount += 1;
+                evenResMap.put(evenId, BaseError.CASE_OK);
                 continue;
             }
 
         }
 
+        //总记录
+        String userName = OtherTool.splitStr(runTagId, "-")[0];
+        String endTime = simpleDateFormat.format(new Date());
+        logger.info("========>统计批次【{}】事件概览,共{}个事件,成功-{},失败-{}", runTagId, totalCount, successCount, failCount);
+        CaseResOverViewEntity caseResOverViewEntity = new CaseResOverViewEntity(runTagId, null, appId, totalCount, failCount, successCount, userName, startTime, endTime);
+        caseResOverViewService.recordOverView(caseResOverViewEntity);
 
         driver.closeApp();
         driver.quit();

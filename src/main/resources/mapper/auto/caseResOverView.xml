@@ -7,6 +7,7 @@
     <resultMap id="baseCaseResOverView" type="com.honda.interauto.entity.CaseResOverViewEntity">
         <id property="id" column="id" jdbcType="BIGINT"/>
         <id property="proId" column="proId" jdbcType="BIGINT"/>
+        <id property="appId" column="appId" jdbcType="BIGINT"/>
         <id property="tagId" column="tagId" jdbcType="VARCHAR"/>
         <id property="totalCount" column="total" jdbcType="BIGINT"/>
         <id property="failCount" column="fail" jdbcType="BIGINT"/>
@@ -19,6 +20,7 @@
     <resultMap id="caseResOverViewDto" type="com.honda.interauto.dto.CaseResOverViewDto">
         <id property="id" column="id" jdbcType="BIGINT"/>
         <id property="proId" column="proId" jdbcType="BIGINT"/>
+        <id property="appId" column="appId" jdbcType="BIGINT"/>
         <id property="tagId" column="tagId" jdbcType="VARCHAR"/>
         <id property="totalCount" column="total" jdbcType="BIGINT"/>
         <id property="failCount" column="fail" jdbcType="BIGINT"/>
@@ -35,12 +37,13 @@
 	</sql>
 
     <insert id="recordOverView" parameterType="com.honda.interauto.entity.CaseResOverViewEntity" keyProperty="id" useGeneratedKeys="true">
-        insert into t_caseRes_overView (proId, <include refid="caseResOverView"/>) values(#{proId}, #{tagId}, #{totalCount}, #{failCount}, #{successCount}, #{operator},
+        insert into t_caseRes_overView (proId, appId, <include refid="caseResOverView"/>) values(#{proId}, #{appid}, #{tagId}, #{totalCount}, #{failCount}, #{successCount}, #{operator},
         #{startTime, jdbcType=TIMESTAMP}, #{endTime, jdbcType=TIMESTAMP})
     </insert>
 
-    <select id="getOverView" resultMap="caseResOverViewDto">
-        select t.id, t.proId, <include refid="caseResOverView"/>, p.proName, p.proDesc from t_caseRes_overView t left join t_pro p on t.proId = p.id where 1 = 1
+    <select id="getProOverView" resultMap="caseResOverViewDto">
+        select t.id, t.proId, <include refid="caseResOverView"/>, p.proName, p.proDesc from t_caseRes_overView t left join t_pro p on t.proId = p.id
+        where 1 = 1 and t.proId is not null
         <if test="proId != null">and t.proId = #{proId}</if>
         <if test="operator != null and '' != operator">and t.operator = #{operator}</if>
         order by t.startTime desc
@@ -48,15 +51,39 @@
         limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
     </select>
 
-    <select id="getAllOverView" parameterType="int" resultMap="caseResOverViewDto">
-        select t.id, t.proId, <include refid="caseResOverView"/>, p.proName, p.proDesc from t_caseRes_overView t left join t_pro p on t.proId = p.id where 1 = 1
+    <select id="getAppOverView" resultMap="caseResOverViewDto">
+        select t.id, t.appId, <include refid="caseResOverView"/>, p.appPackage, p.appDes from t_caseRes_overView t left join t_app_info p on t.appId = p.id
+        where 1 = 1 and t.appId is not null
+        <if test="appId != null">and t.appId = #{appId}</if>
+        <if test="operator != null and '' != operator">and t.operator = #{operator}</if>
+        limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
+    </select>
+
+    <select id="getAllProOverView" parameterType="int" resultMap="caseResOverViewDto">
+        select t.id, t.proId, <include refid="caseResOverView"/>, p.proName, p.proDesc from t_caseRes_overView t left join t_pro p on t.proId = p.id
+        where 1 = 1 and t.proId is not null
+        <if test="proId != null">and t.proId = #{proId}</if>
         GROUP BY t.proId
         order by t.proId asc, t.startTime desc
         limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
     </select>
 
-    <select id="getCountRes" resultType="int">
-        select count(*) from t_caseRes_overView where 1 = 1
+    <select id="getAllAppOverView" parameterType="int" resultMap="caseResOverViewDto">
+        select t.id, t.appId, <include refid="caseResOverView"/>, p.appPackage, p.appDes from t_caseRes_overView t left join t_app_info p on t.appId = p.id
+        where 1 = 1 and t.appId is not null
+        <if test="appId != null">and t.appId = #{appId}</if>
+        GROUP BY t.appId
+        order by t.appId asc, t.startTime desc
+        limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
+    </select>
+
+    <select id="getProCountRes" resultType="int">
+        select count(*) from t_caseRes_overView where 1 = 1 and proId is not null
         <if test="proId != null">and proId = #{proId}</if>
+    </select>
+
+    <select id="getAppCountRes" resultType="int">
+        select count(*) from t_caseRes_overView where 1 = 1 and appId is not null
+        <if test="appId != null">and appId = #{appId}</if>
     </select>
 </mapper>

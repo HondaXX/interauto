@@ -6,6 +6,7 @@ import lombok.Data;
 public class CaseResOverViewEntity {
     private Integer id;
     private Integer proId;
+    private Integer appId;
     private String tagId;
     private Integer totalCount;
     private Integer failCount;
@@ -17,9 +18,10 @@ public class CaseResOverViewEntity {
     public CaseResOverViewEntity() {
     }
 
-    public CaseResOverViewEntity(String tagId, Integer proId, Integer totalCount, Integer failCount, Integer successCount, String operator, String startTime, String endTime) {
+    public CaseResOverViewEntity(String tagId, Integer proId, Integer appId, Integer totalCount, Integer failCount, Integer successCount, String operator, String startTime, String endTime) {
         this.tagId = tagId;
         this.proId = proId;
+        this.appId = appId;
         this.totalCount = totalCount;
         this.failCount = failCount;
         this.successCount = successCount;

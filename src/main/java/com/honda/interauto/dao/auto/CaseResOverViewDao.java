@@ -11,10 +11,18 @@ import java.util.List;
 public interface CaseResOverViewDao {
     Integer recordOverView(CaseResOverViewEntity caseResOverViewEntity);
 
-    List<CaseResOverViewDto> getOverView(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize,
+    List<CaseResOverViewDto> getProOverView(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize,
                                          @Param("proId")Integer proId, @Param("operator")String operator);
 
-    List<CaseResOverViewDto> getAllOverView(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize);
+    List<CaseResOverViewDto> getAppOverView(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize,
+                                            @Param("appId")Integer appId, @Param("operator")String operator);
 
-    Integer getCountRes(@Param("proId")Integer proId);
+    List<CaseResOverViewDto> getAllProOverView(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize,
+                                            @Param("proId") Integer proId);
+
+    List<CaseResOverViewDto> getAllAppOverView(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize,
+                                               @Param("appId") Integer appId);
+
+    Integer getProCountRes(@Param("proId")Integer proId);
+    Integer getAppCountRes(@Param("appId")Integer appId);
 }

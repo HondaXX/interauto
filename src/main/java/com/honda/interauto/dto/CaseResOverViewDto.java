@@ -7,6 +7,7 @@ public class CaseResOverViewDto {
 
     private Integer id;
     private Integer proId;
+    private Integer appId;
     private String tagId;
     private Integer totalCount;
     private Integer failCount;
@@ -16,4 +17,6 @@ public class CaseResOverViewDto {
     private String endTime;
     private String proName;
     private String proDesc;
+    private String appPackage;
+    private String appDes;
 }

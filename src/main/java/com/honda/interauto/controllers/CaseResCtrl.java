@@ -39,16 +39,23 @@ public class CaseResCtrl {
 
         String operator = reqPojo.getRequestBody().get("operator").toString();
         String proIdStr = reqPojo.getRequestBody().get("proId").toString();
+        String appIdStr = reqPojo.getRequestBody().get("appId").toString();
+
+        String queryType = reqPojo.getRequestBody().get("queryType").toString();
 
         Integer proId = null;
         if (!StringUtils.isBlank(proIdStr)){
             proId = Integer.parseInt(proIdStr);
         }
+        Integer appId = null;
+        if (!StringUtils.isBlank(appIdStr)){
+            appId = Integer.parseInt(appIdStr);
+        }
 
         List<CaseResOverViewDto> caseResList = new ArrayList<CaseResOverViewDto>();
-        caseResList = caseResOverViewService.getOverView(pageNum, pageSize, proId, operator);
+        caseResList = caseResOverViewService.getOverView(queryType, pageNum, pageSize, proId, appId, operator);
 
-        int resCount = caseResOverViewService.getCountRes(proId);
+        int resCount = caseResOverViewService.getCountRes(queryType, proId, appId);
 
         ResPojo res = new ResPojo();
         res.putData("count", resCount);
@@ -63,18 +70,32 @@ public class CaseResCtrl {
         Integer pageNum = Integer.parseInt(reqPojo.getRequestBody().get("pageNum").toString());
         Integer pageSize = Integer.parseInt(reqPojo.getRequestBody().get("pageSize").toString());
         String runTagId = reqPojo.getRequestBody().get("tagId").toString();
-        String caseIdStr = reqPojo.getRequestBody().get("caseId").toString();
 
+        String caseIdStr = reqPojo.getRequestBody().get("caseId").toString();
         String caseRes = reqPojo.getRequestBody().get("caseRes").toString();
         String interUrl = reqPojo.getRequestBody().get("interUrl").toString();
         String caseAim = reqPojo.getRequestBody().get("caseAim").toString();
+
+        String appIdStr = reqPojo.getRequestBody().get("appId").toString();
+        String evenName  = reqPojo.getRequestBody().get("evenName").toString();
+        String evenIdStr = reqPojo.getRequestBody().get("evenId").toString();
+
+        String queryType = reqPojo.getRequestBody().get("queryType").toString();
 
         Integer caseId = null;
         if (!StringUtils.isBlank(caseIdStr)){
             caseId = Integer.parseInt(caseIdStr);
         }
+        Integer appId = null;
+        if (!StringUtils.isBlank(appIdStr)){
+            appId = Integer.parseInt(appIdStr);
+        }
+        Integer evenId = null;
+        if (!StringUtils.isBlank(evenIdStr)){
+            evenId = Integer.parseInt(evenIdStr);
+        }
 
-        List<CaseResDto> caseDetailList = caseResDetailService.getCaseResDetail(runTagId, pageNum, pageSize, caseRes, caseId, caseAim, interUrl);
+        List<CaseResDto> resDetailList = caseResDetailService.getCaseResDetail(queryType, runTagId, pageNum, pageSize, caseRes, caseId, caseAim, interUrl, evenId, evenName, appId);
 
         ResPojo res = new ResPojo();
         res.setResCode(BaseError.RESPONSE_OK);
@@ -82,7 +103,7 @@ public class CaseResCtrl {
             int detailCount = caseResDetailService.getTagResCount(runTagId);
             res.putData("count", detailCount);
         }
-        res.putData("resList", caseDetailList);
+        res.putData("resList", resDetailList);
         return res;
     }
 
@@ -92,7 +113,16 @@ public class CaseResCtrl {
         Integer pageNum = Integer.parseInt(reqPojo.getRequestBody().get("pageNum").toString());
         Integer pageSize = Integer.parseInt(reqPojo.getRequestBody().get("pageSize").toString());
 
-        List<CaseResOverViewDto> proOverView = caseResOverViewService.getAllOverView(pageNum, pageSize);
+        Integer proId = null;
+        if (StringUtils.isNotBlank(reqPojo.getRequestBody().get("proId").toString())){
+            proId = Integer.parseInt(reqPojo.getRequestBody().get("proId").toString());
+        }
+        Integer appId = null;
+        if (StringUtils.isNotBlank(reqPojo.getRequestBody().get("appId").toString())){
+            appId = Integer.parseInt(reqPojo.getRequestBody().get("appId").toString());
+        }
+
+        List<CaseResOverViewDto> proOverView = caseResOverViewService.getAllOverView(pageNum, pageSize, proId, appId);
 
         ResPojo res = new ResPojo();
         res.setResCode(BaseError.RESPONSE_OK);

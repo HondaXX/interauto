@@ -8,22 +8,26 @@
         <id property="id" column="id" jdbcType="BIGINT"/>
         <id property="tagId" column="tagId" jdbcType="VARCHAR"/>
         <id property="caseId" column="caseId" jdbcType="BIGINT"/>
+        <id property="evenId" column="evenId" jdbcType="BIGINT"/>
         <id property="caseRes" column="caseRes" jdbcType="VARCHAR"/>
         <id property="caseResCode" column="caseResCode" jdbcType="VARCHAR"/>
         <id property="caseDes" column="caseResDes" jdbcType="VARCHAR"/>
         <id property="caseResDetail" column="caseResDetail" jdbcType="VARCHAR"/>
+        <id property="evenName" column="evenName" jdbcType="VARCHAR"/>
     </resultMap>
 
     <resultMap id="caseResDtoMap" type="com.honda.interauto.dto.CaseResDto">
         <id property="id" column="id" jdbcType="BIGINT"/>
         <id property="tagId" column="tagId" jdbcType="VARCHAR"/>
         <id property="caseId" column="caseId" jdbcType="BIGINT"/>
+        <id property="evenId" column="evenId" jdbcType="BIGINT"/>
         <id property="caseRes" column="caseRes" jdbcType="VARCHAR"/>
         <id property="caseResCode" column="caseResCode" jdbcType="VARCHAR"/>
         <id property="caseDes" column="caseResDes" jdbcType="VARCHAR"/>
         <id property="caseResDetail" column="caseResDetail" jdbcType="VARCHAR"/>
         <id property="caseAim" column="caseAim" jdbcType="VARCHAR"/>
         <id property="interUrl" column="interUrl" jdbcType="VARCHAR"/>
+        <id property="evenName" column="evenName" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="caseRes">
@@ -31,7 +35,7 @@
 	</sql>
 
     <insert id="saveCaseRes" parameterType="com.honda.interauto.entity.CaseResDetailEntity" keyProperty="id" useGeneratedKeys="true">
-        insert into t_caseRes_detail (caseId, <include refid="caseRes"/>) values(#{caseId}, #{tagId}, #{caseRes}, #{caseResCode}, #{caseDes}, #{caseResDetail})
+        insert into t_caseRes_detail (caseId, evenId, <include refid="caseRes"/>) values(#{caseId}, #{evenId} #{tagId}, #{caseRes}, #{caseResCode}, #{caseDes}, #{caseResDetail})
     </insert>
 
     <select id="getTagResCount" parameterType="java.lang.String" resultType="int">
@@ -39,13 +43,25 @@
         and <if test="runTagId != null">tagId = #{runTagId}</if>
     </select>
 
-    <select id="getCaseResDetail" resultMap="caseResDtoMap">
+    <select id="getProResDetail" resultMap="caseResDtoMap">
         select t.id, t.caseId, <include refid="caseRes"/>, i.caseAim, i.interUrl from t_caseRes_detail t left join t_intercase i on t.caseId = i.caseId where 1 = 1
         <if test="runTagId != null and '' != runTagId">and t.tagId = #{runTagId}</if>
         <if test="caseId != null">and t.caseId = #{caseId}</if>
         <if test="caseRes != null and '' != caseRes">and t.caseRes = #{caseRes}</if>
         <if test="caseAim != null and '' != caseAim">and i.caseAim like CONCAT('%', #{caseAim, jdbcType=VARCHAR}, '%')</if>
         <if test="interUrl != null and '' != interUrl">and i.interUrl = #{interUrl}</if>
+        order by t.id desc
+        limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
+    </select>
+
+    <select id="getAppResDetail" resultMap="caseResDtoMap">
+        select t.id, t.evenId, <include refid="caseRes"/>, e.evenName, e.appId from t_caseRes_detail t left join t_app_even e on t.evenId = e.id where 1 = 1
+        <if test="runTagId != null and '' != runTagId">and t.tagId = #{runTagId}</if>
+        <if test="evenId != null">and t.evenId = #{evenId}</if>
+        <if test="caseRes != null and '' != caseRes">and t.caseRes = #{caseRes}</if>
+        <if test="evenName != null and '' != evenName">and e.evenName like CONCAT('%', #{evenName, jdbcType=VARCHAR}, '%')</if>
+        <if test="appId != null and '' != appId">and e.appId = #{appId}</if>
+        <if test="evenAim != null and '' != evenAim">and e.evenAim = #{evenAim}</if>
         order by t.id desc
         limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
     </select>

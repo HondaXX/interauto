@@ -76,7 +76,7 @@ public class RunApiCtrl {
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String startTime = simpleDateFormat.format(date);
-        String runTagId = runApiTagId(date);
+        String runTagId = caseResDetailService.runApiTagId(date);
 
         for(String modelIdStr : modelCaseMap.keySet()){
             Integer modelId = Integer.parseInt(modelIdStr);
@@ -96,7 +96,7 @@ public class RunApiCtrl {
                     if (!operateDBStr.equals("success")){
                         logger.info("========>初始化用例数据失败");
                         logger.info("========>用例结果详情存库，caseId-->{}", caseId);
-                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "1", BaseError.CASE_DB_OPER, BaseError.CASE_DB_OPER_DESC, "初始化错误sql:" + operateDBStr);
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, null,"1", BaseError.CASE_DB_OPER, BaseError.CASE_DB_OPER_DESC, "初始化错误sql:" + operateDBStr);
                         caseResDetailService.saveCaseRes(caseResDetailEntity);
                         caseResMap.put(caseId, BaseError.CASE_DB_OPER_DESC);
                         failCount += 1;
@@ -117,7 +117,7 @@ public class RunApiCtrl {
                         String paramStr = paramAndSql[0];
                         String sqlStr = paramAndSql[1];
                         logger.info("========>用例结果详情存库，caseId-->{}", caseId);
-                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "1", BaseError.CASE_PARAM_GETV, BaseError.CASE_PARAM_GETV_DESC, "请求参数化取值错误key:" + paramStr + ",sql:" + sqlStr);
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, null,"1", BaseError.CASE_PARAM_GETV, BaseError.CASE_PARAM_GETV_DESC, "请求参数化取值错误key:" + paramStr + ",sql:" + sqlStr);
                         caseResDetailService.saveCaseRes(caseResDetailEntity);
                         caseResMap.put(caseId, BaseError.CASE_PARAM_GETV_DESC + ": {" + paramWithValueMap + "}");
                         if (rollBackDB(interCaseEntity).equals(false)){
@@ -131,7 +131,7 @@ public class RunApiCtrl {
                     if (trueReqMap instanceof String){
                         logger.info("========>请求替换参数化值失败");
                         logger.info("========>用例结果详情存库，caseId-->{}", caseId);
-                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "1", BaseError.CASE_PARAM_REP, BaseError.CASE_PARAM_REP_DESC, "请求时参数化替换错误key:" + trueReqMap);
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, null, "1", BaseError.CASE_PARAM_REP, BaseError.CASE_PARAM_REP_DESC, "请求时参数化替换错误key:" + trueReqMap);
                         caseResDetailService.saveCaseRes(caseResDetailEntity);
                         caseResMap.put(caseId, BaseError.CASE_PARAM_REP_DESC + ": {" + trueReqMap + "}");
                         if (rollBackDB(interCaseEntity).equals(false)){
@@ -165,7 +165,7 @@ public class RunApiCtrl {
                 if (null == resInfo){
                     logger.info("========>接口请求响应出错");
                     logger.info("========>用例结果详情存库，caseId-->{}", caseId);
-                    CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "1", BaseError.CASE_RES_ERROR, BaseError.CASE_RES_ERROR_DESC, "接口调用失败，响应为空");
+                    CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, null,"1", BaseError.CASE_RES_ERROR, BaseError.CASE_RES_ERROR_DESC, "接口调用失败，响应为空");
                     caseResDetailService.saveCaseRes(caseResDetailEntity);
                     caseResMap.put(caseId, BaseError.CASE_RES_ERROR_DESC);
                     if (rollBackDB(interCaseEntity).equals(false)){
@@ -191,7 +191,7 @@ public class RunApiCtrl {
                         String paramStr = paramAndSql[0];
                         String sqlStr = paramAndSql[1];
                         logger.info("========>用例结果详情存库，caseId-->{}", caseId);
-                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "1", BaseError.CASE_PARAM_GETV, BaseError.CASE_PARAM_GETV_DESC, "返回参数化取值错误key:" + paramStr + ",sql:" + sqlStr);
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, null, "1", BaseError.CASE_PARAM_GETV, BaseError.CASE_PARAM_GETV_DESC, "返回参数化取值错误key:" + paramStr + ",sql:" + sqlStr);
                         caseResDetailService.saveCaseRes(caseResDetailEntity);
                         caseResMap.put(caseId, BaseError.CASE_PARAM_GETV_DESC + ": {" + paramWithValueMap + "}");
                         if (rollBackDB(interCaseEntity).equals(false)){
@@ -205,7 +205,7 @@ public class RunApiCtrl {
                     if (trueExpectO instanceof String){
                         logger.info("========>结果替换参数化值失败");
                         logger.info("========>用例结果详情存库，caseId-->{}", caseId);
-                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "1", BaseError.CASE_PARAM_REP, BaseError.CASE_PARAM_REP_DESC, "响应参数化替换错误key:" + trueExpectO);
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, null,"1", BaseError.CASE_PARAM_REP, BaseError.CASE_PARAM_REP_DESC, "响应参数化替换错误key:" + trueExpectO);
                         caseResDetailService.saveCaseRes(caseResDetailEntity);
                         caseResMap.put(caseId, BaseError.CASE_PARAM_REP_DESC + ": {" + trueExpectO + "}");
                         if (rollBackDB(interCaseEntity).equals(false)){
@@ -229,7 +229,7 @@ public class RunApiCtrl {
                         if (compareRes.containsKey("unequalParam")){
                             String failStr = compareRes.get("unequalParam");
                             logger.info("========>用例结果详情存库，caseId-->{}", caseId);
-                            CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "1", BaseError.CASE_COMP_UNEQ, BaseError.CASE_COMP_UNEQ_DESC, "响应与预期比对不相等:" + failStr);
+                            CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, null, "1", BaseError.CASE_COMP_UNEQ, BaseError.CASE_COMP_UNEQ_DESC, "响应与预期比对不相等:" + failStr);
                             caseResDetailService.saveCaseRes(caseResDetailEntity);
                             caseResMap.put(caseId, BaseError.CASE_COMP_UNEQ_DESC + failStr);
                         }
@@ -237,7 +237,7 @@ public class RunApiCtrl {
                         if (compareRes.containsKey("lessParam")){
                             String failStr = compareRes.get("lessParam");
                             logger.info("========>用例结果详情存库，caseId-->{}", caseId);
-                            CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "1", BaseError.CASE_COMP_LESSKEY, BaseError.CASE_CONP_LESSKEY_DESC, "响应存在预期不存在的值:" + failStr);
+                            CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, null, "1", BaseError.CASE_COMP_LESSKEY, BaseError.CASE_CONP_LESSKEY_DESC, "响应存在预期不存在的值:" + failStr);
                             caseResDetailService.saveCaseRes(caseResDetailEntity);
                             caseResMap.put(caseId, BaseError.CASE_CONP_LESSKEY_DESC + failStr);
                         }
@@ -256,7 +256,7 @@ public class RunApiCtrl {
                     if (compareRes.get("comRes").equals("0")){
                         String lessStr = compareRes.get("lessParam");
                         logger.info("========>模糊匹比较例结果详情存库，caseId-->{}", caseId);
-                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "1", BaseError.CASE_COMP_LESSKEY, BaseError.CASE_CONP_LESSKEY_DESC, "响应存在预期不存在的值:" + lessStr);
+                        CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, null, "1", BaseError.CASE_COMP_LESSKEY, BaseError.CASE_CONP_LESSKEY_DESC, "响应存在预期不存在的值:" + lessStr);
                         caseResDetailService.saveCaseRes(caseResDetailEntity);
                         caseResMap.put(caseId, BaseError.CASE_CONP_LESSKEY_DESC + lessStr);
                         if (rollBackDB(interCaseEntity).equals(false)){
@@ -287,14 +287,14 @@ public class RunApiCtrl {
                 if (rollBackDB(interCaseEntity).equals(false)){
                     logger.info("========>用例执行完还原失败：{}", caseId);
                     logger.info("========>用例结果详情存库，caseId-->{}", caseId);
-                    CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "0", BaseError.CASE_DB_OPER, BaseError.CASE_DB_OPER_DESC, "用例成功执行，但还原数据库错误，请查日志:【用例执行完还原失败】");
+                    CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId,null, "0", BaseError.CASE_DB_OPER, BaseError.CASE_DB_OPER_DESC, "用例成功执行，但还原数据库错误，请查日志:【用例执行完还原失败】");
                     caseResDetailService.saveCaseRes(caseResDetailEntity);
                     caseResMap.put(caseId, BaseError.CASE_DB_OPER_DESC);
                     successCount += 1;
                     continue;
                 }
                 logger.info("========>用例结果详情存库，caseId-->{}", caseId);
-                CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, "0", BaseError.CASE_OK, "success", "用例通过");
+                CaseResDetailEntity caseResDetailEntity = new CaseResDetailEntity(null, runTagId, caseId, null, "0", BaseError.CASE_OK, "success", "用例通过");
                 caseResDetailService.saveCaseRes(caseResDetailEntity);
                 successCount += 1;
                 caseResMap.put(caseId, BaseError.CASE_OK);
@@ -305,7 +305,7 @@ public class RunApiCtrl {
         String userName = OtherTool.splitStr(runTagId, "-")[0];
         String endTime = simpleDateFormat.format(new Date());
         logger.info("========>统计批次【{}】用例概览,共{}条用例,成功-{},失败-{}", runTagId, totalCount, successCount, failCount);
-        CaseResOverViewEntity caseResOverViewEntity = new CaseResOverViewEntity(runTagId, proId, totalCount, failCount, successCount, userName, startTime, endTime);
+        CaseResOverViewEntity caseResOverViewEntity = new CaseResOverViewEntity(runTagId, proId, null, totalCount, failCount, successCount, userName, startTime, endTime);
         caseResOverViewService.recordOverView(caseResOverViewEntity);
         res.setResCode(BaseError.RESPONSE_OK);
         res.putData("resDetail", caseResMap);
@@ -331,16 +331,4 @@ public class RunApiCtrl {
             return rollRes;
         }
     }
-
-    //跑用例时独立id方法
-    public String runApiTagId(Date date){
-        HttpServletRequest request = RequestTool.getCurrentRequest();
-        String tokenStr = request.getHeader("token");
-        UserEntity userEntity = (UserEntity) SysInitData.ru.get(tokenStr);
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-        String timeStr = format.format(date);
-        String tagIdStr = userEntity.getName() + "-" + timeStr;
-        return tagIdStr;
-    }
-
 }

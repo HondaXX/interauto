@@ -11,6 +11,7 @@ public class CaseResDetailEntity implements Serializable {
     private Integer id;
     private String tagId;
     private Integer caseId;
+    private Integer evenId;
     private String caseRes;
     private String caseResCode;
     private String caseDes;
@@ -75,10 +76,11 @@ public class CaseResDetailEntity implements Serializable {
     public CaseResDetailEntity() {
     }
 
-    public CaseResDetailEntity(Integer id, String tagId, Integer caseId, String caseRes, String caseResCode, String caseDes, String caseResDetail) {
+    public CaseResDetailEntity(Integer id, String tagId, Integer caseId, Integer evenId, String caseRes, String caseResCode, String caseDes, String caseResDetail) {
         this.id = id;
         this.tagId = tagId;
         this.caseId = caseId;
+        this.evenId = evenId;
         this.caseRes = caseRes;
         this.caseResCode = caseResCode;
         this.caseDes = caseDes;

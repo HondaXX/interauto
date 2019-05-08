@@ -60,6 +60,8 @@ public interface BaseError {
     String ELE_NOTFOUND_DESC = "元素未找到";
     String ELE_RES_NOTMATCH = "404";
     String ELE_RES_NOTMATCH_DESC = "结果与预期不匹配";
+    String EVEN_NOT_FOUND = "405";
+    String EVEN_NOT_FOUND_DESC = "事件不存在或未设置步骤";
 
     //系统常量
     String RESULT_CODE = "resCode";
