@@ -3,8 +3,14 @@ package com.honda.interauto.tools.httpTool;
 import com.honda.interauto.tools.sysTool.TypeChangeTool;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,12 +55,16 @@ public class UpDownLoadTool {
         response.reset();
         response.addHeader("pragma", "NO-cache");
         response.addHeader("Cache-Control", "must-revalidate, no-transform");
+        response.addHeader("Content-Type", "application/octet-stream; charset=utf-8");
         response.setDateHeader("Expries", 0);
-        response.setContentType("application/octet-stream;charset=ISO-8859-1");
+//        response.setContentType("application/octet-stream; charset=ISO-8859-1");
+        response.setContentType("application/force-download; charset=ISO-8859-1");
         response.setCharacterEncoding("UTF-8");
 
         String fileName = file.getName();
-        response.setHeader("Content-Disposition", "attachment:filename=" + fileName);
+//        response.setHeader("Content-Disposition", "attachment:filename=" + fileName);
+        response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+//        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
         InputStream is = null;
         OutputStream os = null;
@@ -66,17 +76,39 @@ public class UpDownLoadTool {
             while ((length = is.read(buffer)) != -1){
                 os.write(buffer, 0, length);
             }
-            os.flush();
-            if (os != null){
-                os.close();
-            }
             if (is != null){
                 is.close();
+            }
+            if (os != null){
+                response.flushBuffer();
+//                os.flush();
+                os.close();
             }
         }catch (Exception e){
             logger.error("file tranfer error: {}", file.getName());
             e.printStackTrace();
         }
 
+    }
+
+    public ResponseEntity<InputStreamResource> downLoadFileTwo(String fileFullPath){
+        FileSystemResource fileRs = new FileSystemResource(fileFullPath);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("Content-Disposition", "attachment; filename=" + fileRs.getFilename());
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+
+        try {
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentLength(fileRs.contentLength())
+                    .contentType(MediaType.parseMediaType("application/octet-stream"))
+                    .body(new InputStreamResource(fileRs.getInputStream()));
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 }

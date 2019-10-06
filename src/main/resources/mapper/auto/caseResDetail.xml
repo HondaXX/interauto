@@ -49,19 +49,19 @@
         <if test="caseId != null">and t.caseId = #{caseId}</if>
         <if test="caseRes != null and '' != caseRes">and t.caseRes = #{caseRes}</if>
         <if test="caseAim != null and '' != caseAim">and i.caseAim like CONCAT('%', #{caseAim, jdbcType=VARCHAR}, '%')</if>
-        <if test="interUrl != null and '' != interUrl">and i.interUrl = #{interUrl}</if>
+        <if test="interUrl != null and '' != interUrl">and i.interUrl like CONCAT ('%', #{interUrl, jdbcType=VARCHAR}, '%') </if>
         order by t.id desc
         limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
     </select>
 
     <select id="getAppResDetail" resultMap="caseResDtoMap">
-        select t.id, t.evenId, <include refid="caseRes"/>, e.evenName, e.appId from t_caseRes_detail t left join t_app_even e on t.evenId = e.id where 1 = 1
+        select t.id, t.evenId, <include refid="caseRes"/>, e.evenName, e.appId, e.evenAim from t_caseRes_detail t left join t_app_even e on t.evenId = e.id where 1 = 1
         <if test="runTagId != null and '' != runTagId">and t.tagId = #{runTagId}</if>
         <if test="evenId != null">and t.evenId = #{evenId}</if>
         <if test="caseRes != null and '' != caseRes">and t.caseRes = #{caseRes}</if>
         <if test="evenName != null and '' != evenName">and e.evenName like CONCAT('%', #{evenName, jdbcType=VARCHAR}, '%')</if>
         <if test="appId != null and '' != appId">and e.appId = #{appId}</if>
-        <if test="evenAim != null and '' != evenAim">and e.evenAim = #{evenAim}</if>
+        <if test="evenAim != null and '' != evenAim">and e.evenAim like CONCAT('%', #{evenAim, jdbcType=VARCHAR}, '%')</if>
         order by t.id desc
         limit ${(pageNum - 1) * pageSize}, ${pageNum * pageSize}
     </select>

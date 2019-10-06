@@ -29,7 +29,7 @@ public class AopTool {
 //    @Autowired
 //    private RedisTemplate redisTemplate;
 
-    @Around("execution(* com.honda.interauto.controllers.*.*(..)) && !execution(* com.honda.interauto.controllers.UserCtrl.*(..))")
+    @Around("execution(* com.honda.interauto.controllers.*.*(..)) && !execution(* com.honda.interauto.controllers.UserCtrl.*(..)) && !execution(* com.honda.interauto.controllers.FileCtrl.*(..))")
     public Object checkInter(ProceedingJoinPoint joinpoint){
         //可以从redis里面取，但有点耗时，直接从启动后初始化数据取
 //        RedisUtil ru = new RedisUtil();

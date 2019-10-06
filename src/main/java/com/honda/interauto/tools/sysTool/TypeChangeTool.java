@@ -3,10 +3,12 @@ package com.honda.interauto.tools.sysTool;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +59,18 @@ public class TypeChangeTool {
         return doubleStr;
     }
     //时间相关
+    public static String addOrSubDay(Integer mounths, Integer days){
+        Calendar cal = Calendar.getInstance();
+        if (mounths != null){
+            cal.add(Calendar.MONTH, mounths);
+        }
+        if (days != null){
+            cal.add(Calendar.DAY_OF_MONTH, days);
+        }
+        String resStr = stampToDateStr(cal.getTime().getTime());
+        return resStr;
+    }
+
     public static String stampToDateStr(Long timeLong){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date(timeLong);
@@ -98,9 +112,17 @@ public class TypeChangeTool {
     }
 
     public static void main(String[] args){
-        Long timeLong = new Date().getTime();
-        String s = TypeChangeTool.stampToDateStr(timeLong);
-        System.out.print(s);
+//        Long timeLong = new Date().getTime();
+//        Long timeBefore = timeLong - (long)(90 * 24 * 60 * 60 * 1000000);
+//        System.out.println(timeLong + "----" + timeBefore);
+//        String s = TypeChangeTool.stampToDateStr(timeBefore);
+//        System.out.print(s);
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, -3);
+//        int day=cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        System.out.println(TypeChangeTool.stampToDateStr(cal.getTime().getTime()));
     }
 
 }

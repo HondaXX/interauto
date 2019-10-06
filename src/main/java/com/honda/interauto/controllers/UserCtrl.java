@@ -126,7 +126,7 @@ public class UserCtrl {
 
         Integer useId = Integer.parseInt(reqInfo.getRequestBody().get("id").toString());
         UserEntity user = (UserEntity) SysInitData.ru.get(tokenStr);
-        if (!(user.getId() == useId)){
+        if (!(user.getId() != useId)){
             logger.info("========>操作用户与token信息不匹配:{}" + tokenStr);
             ResPojo res = new ResPojo();
             res.setErrorCode(BaseError.USER_TOKENNOTMATCH);
@@ -139,7 +139,7 @@ public class UserCtrl {
         SysInitData.ru.del(tokenStr);
         SysInitData.ru.del(isLoginStr);
         ResPojo res = new ResPojo();
-        res.setErrorCode(BaseError.RESPONSE_OK);
+        res.setResCode(BaseError.RESPONSE_OK);
         res.putData("msg", "退出登录成功");
         logger.info("{}-用户退出登录成功", user.getName());
         return res;

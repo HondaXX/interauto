@@ -63,6 +63,10 @@ public interface BaseError {
     String EVEN_NOT_FOUND = "405";
     String EVEN_NOT_FOUND_DESC = "事件不存在或未设置步骤";
 
+    //文件管理
+    String FILE_NOT_FUND = "500";
+    String FILE_NOT_FUND_DESC = "文件未找到";
+
     //系统常量
     String RESULT_CODE = "resCode";
     String ERROR_CODE = "errorCode";

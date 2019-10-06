@@ -75,6 +75,7 @@ public class CaseResCtrl {
         String caseRes = reqPojo.getRequestBody().get("caseRes").toString();
         String interUrl = reqPojo.getRequestBody().get("interUrl").toString();
         String caseAim = reqPojo.getRequestBody().get("caseAim").toString();
+        String evenAim = reqPojo.getRequestBody().get("evenAim").toString();
 
         String appIdStr = reqPojo.getRequestBody().get("appId").toString();
         String evenName  = reqPojo.getRequestBody().get("evenName").toString();
@@ -95,7 +96,7 @@ public class CaseResCtrl {
             evenId = Integer.parseInt(evenIdStr);
         }
 
-        List<CaseResDto> resDetailList = caseResDetailService.getCaseResDetail(queryType, runTagId, pageNum, pageSize, caseRes, caseId, caseAim, interUrl, evenId, evenName, appId);
+        List<CaseResDto> resDetailList = caseResDetailService.getCaseResDetail(queryType, runTagId, pageNum, pageSize, caseRes, caseId, caseAim, interUrl, evenId, evenAim ,evenName, appId);
 
         ResPojo res = new ResPojo();
         res.setResCode(BaseError.RESPONSE_OK);

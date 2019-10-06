@@ -16,7 +16,7 @@ public interface CaseResDetailDao {
                                       @Param("caseAim")String caseAim, @Param("interUrl")String interUrl);
 
     List<CaseResDto> getAppResDetail(@Param("runTagId")String runTagId, @Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize,
-                                     @Param("caseRes")String caseRes, @Param("evenId") Integer evenId,
+                                     @Param("caseRes")String caseRes, @Param("evenId") Integer evenId, @Param("evenAim") String enenAim,
                                      @Param("evenName")String evenName, @Param("appId")Integer appId);
 
     Integer getTagResCount(@Param("runTagId")String runTagId);

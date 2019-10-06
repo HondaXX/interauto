@@ -24,14 +24,14 @@ public class CaseResDetailService {
         return caseResDetailDao.saveCaseRes(caseResDetailEntity);
     }
 
-    public List<CaseResDto> getCaseResDetail(String queryType,String runTagId, Integer pageNum, Integer pageSize, String caseRes,
+    public List<CaseResDto> getCaseResDetail(String queryType, String runTagId, Integer pageNum, Integer pageSize, String caseRes,
                                              Integer caseId, String caseAim, String interUrl,
-                                             Integer evenId, String evenName, Integer appId){
+                                             Integer evenId, String evenAim, String evenName, Integer appId){
         if (queryType.equals("pro")){
             return caseResDetailDao.getProResDetail(runTagId, pageNum, pageSize, caseRes, caseId, caseAim, interUrl);
         }
         if (queryType.equals("app")){
-            return caseResDetailDao.getAppResDetail(runTagId, pageNum, pageSize, caseRes, evenId, evenName, appId);
+            return caseResDetailDao.getAppResDetail(runTagId, pageNum, pageSize, caseRes, evenId, evenAim, evenName, appId);
         }
         return null;
     }
